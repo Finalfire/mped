@@ -9,7 +9,6 @@
 
 constexpr unsigned short _ASCII_LEN = 255 - 0;
 
-
 class Sequence {
 private:
     std::string seq;
@@ -21,11 +20,15 @@ private:
     std::map<char, unsigned> mapping;
 
     void extract_sigma() {
+        // Bitset is being used because it allows us to
+        // avoid the sort of the symbols for making the alphabet
         std::bitset<_ASCII_LEN> symbols;
 
-        for (size_t i = 0; i < this->seq.size(); i++)
-            symbols[(int) this->seq[i]] = (symbols[(int) this->seq[i]] || 1);
+        // Here the ASCII value is used to index the bitset
+        for (char i : this->seq)
+            symbols[(int) i] = (symbols[(int) i] || 1);
 
+        // Lexicographic order
         for (size_t i = 0; i < _ASCII_LEN; ++i)
             if (symbols[i])
                 this->sigma += (char) i;
@@ -37,8 +40,11 @@ private:
     }
 
     void make_representations() {
+        // Sigma representation is always 0..m-1
         for (unsigned i = 0; i < this->sigma.size(); )
             this->sigma_repr.push_back(i++);
+
+        // Mapping from the alphabet
         for (unsigned i = 0; i < this->seq.size(); )
             this->seq_repr.push_back(this->mapping[this->seq[i++]]);
     }
@@ -56,25 +62,29 @@ public:
         init();
     }
 
-    explicit Sequence(const std::string& s) : seq(s) {
+    explicit Sequence(std::string&& s)  {
+        seq = std::move(s);
         init();
     }
 
-    const std::string &getSeq() const {
+    const std::string& getSeq() const {
         return seq;
     }
 
-    const std::string &getSigma() const {
+    const std::string& getSigma() const {
         return sigma;
     }
 
-    const std::vector<unsigned int> &getSeq_repr() const {
+    const std::vector<unsigned int>& getSeq_repr() const {
         return seq_repr;
     }
 
-    const std::vector<unsigned int> &getSigma_repr() const {
+    const std::vector<unsigned int>& getSigma_repr() const {
         return sigma_repr;
     }
+
+    const size_t seq_len() const { return seq.size(); }
+    const size_t sigma_len() const { return sigma.size(); }
 };
 
 #endif
