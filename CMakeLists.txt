@@ -4,4 +4,4 @@ project(MPED)
 set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES src/)
 
-add_executable(MPED src/main.cpp src/Utility.h)
+add_executable(MPED src/main.cpp src/Utility.h src/DelimitedSequence.hpp)

@@ -6,6 +6,7 @@
 #include <numeric>
 #include <string>
 #include <vector>
+#include <sstream>
 
 constexpr unsigned short _ASCII_LEN = 255 - 0;
 
@@ -19,7 +20,7 @@ private:
 
     std::map<char, unsigned> mapping;
 
-    void extract_sigma() {
+    void extract_symbols() {
         // Bitset is being used because it allows us to
         // avoid the sort of the symbols for making the alphabet
         std::bitset<_ASCII_LEN> symbols;
@@ -50,7 +51,7 @@ private:
     }
 
     void init() {
-        extract_sigma();
+        extract_symbols();
         define_mapping();
         make_representations();
     }
