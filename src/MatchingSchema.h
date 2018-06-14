@@ -11,7 +11,8 @@ struct MatchingSchema {
     // x is the default boolean value for the matrix
     MatchingSchema(const size_t& a, const size_t& b, const size_t& c, const size_t& d, const bool x) : n(a), m(b), p1(c), p2(d) {
         ms = new bool*[n];
-        for (size_t i = 0; i < n; ++i) ms[i] = new bool[m];
+        for (size_t i = 0; i < n; ++i)
+            ms[i] = new bool[m];
 
         init(x);
         set_general(!x);

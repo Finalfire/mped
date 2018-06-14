@@ -1,7 +1,7 @@
-#ifndef MPED_HPP
-#define MPED_HPP
+#ifndef MPED_H
+#define MPED_H
 
-#include "EditDistance.hpp"
+#include "EditDistance.h"
 #include "Sequence.hpp"
 
 class MPED {

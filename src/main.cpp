@@ -1,9 +1,9 @@
 #include <iostream>
-#include "EditDistance.hpp"
-#include "MatchingSchema.hpp"
+#include "EditDistance.h"
+#include "MatchingSchema.h"
 #include "MPED.hpp"
 #include "Sequence.hpp"
-#include "DelimitedSequence.hpp"
+#include "DelimitedSequence.h"
 
 void prova_seq() {
     Sequence a("aaaaabcdeeef");
@@ -29,11 +29,14 @@ void prova_seq() {
 }
 
 void token_seq() {
-    DelimitedSequence a("ciao mi chiamo ciao ciao chiamo francesco", " ");
-    DelimitedSequence b("hello my name is ciao my name is francesco", " ");
+    DelimitedSequence a("aaa bbb ccc ddd eee fff", " ");
+    DelimitedSequence b("aaa bbb ccc ddd eee fff", " ");
 
-    for (auto x: a.getTokens())
-        std::cout << x << ' ' << a.getMapping().at(x) << std::endl;
+    EditDistance e(a.seq_len()+1, b.seq_len()+1);
+    MatchingSchema m(a.sigma_len(), b.sigma_len(), 1, 1, true);
+
+    unsigned edit_distance = e.compute_edit(a, b, m);
+    std::cout << edit_distance << std::endl;
 }
 
 int main() {

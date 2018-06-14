@@ -4,7 +4,7 @@
 #include <climits>
 #include <sstream>
 #include <vector>
-#include "MatchingSchema.hpp"
+#include "MatchingSchema.h"
 
 // a pair representing a constraint pair
 typedef std::pair<char, char> p_constr;
@@ -42,7 +42,7 @@ inline void printX(int x) {
 int index_of(const unsigned& x, unsigned*& s, const size_t& n) {
     for (size_t i = 0; i < n; ++i)
         if (s[i] == x)
-            return i;
+            return (int) i;
     return -1;
 }
 

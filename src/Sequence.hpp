@@ -1,5 +1,5 @@
-#ifndef SEQUENCE_HPP
-#define SEQUENCE_HPP
+#ifndef SEQUENCE_H
+#define SEQUENCE_H
 
 #include <bitset>
 #include <map>
@@ -27,7 +27,7 @@ private:
 
         // Here the ASCII value is used to index the bitset
         for (char i : this->seq)
-            symbols[(int) i] = (symbols[(int) i] || 1);
+            symbols[(int) i] = (symbols[(int) i] || true);
 
         // Lexicographic order
         for (size_t i = 0; i < _ASCII_LEN; ++i)

@@ -1,5 +1,5 @@
-#ifndef MPED_DELIMITEDSEQUENCE_HPP
-#define MPED_DELIMITEDSEQUENCE_HPP
+#ifndef MPED_DELIMITEDSEQUENCE_H_
+#define MPED_DELIMITEDSEQUENCE_H_
 
 #include <map>
 #include <sstream>
@@ -43,7 +43,13 @@ private:
     }
 
     void fill_representation() {
+        // unsigned representation of the sequence
+        for (auto x: tokseq)
+            seq_repr.push_back(mapping.at(x));
 
+        // unsigned representation of the token alphabet
+        for (auto x: tokens)
+            tokens_repr.push_back(mapping.at(x));
     }
 
     void init() {
@@ -67,11 +73,14 @@ public:
         init();
     }
 
-    const std::vector<std::string>& getTokens() const {
-        return tokens;
-    }
-
+    const std::vector<std::string>& getTokens() const { return tokens; }
     const std::map<std::string, unsigned int>& getMapping() const { return mapping; }
+    const std::vector<unsigned int> &getSeq_repr() const { return seq_repr; }
+    const std::vector<unsigned int> &getTokens_repr() const { return tokens_repr; }
+    const std::vector<unsigned int> &getSigma_repr() const { return tokens_repr; }
+
+    const size_t seq_len() const { return seq_repr.size(); }
+    const size_t sigma_len() const { return tokens_repr.size(); }
 
 };
 
