@@ -61,6 +61,14 @@ struct MatchingSchema {
             std::cout << std::endl;
         }
     }
+
+    void print_matching_schema() {
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j)
+                std::cout << ms[i][j] << "\t";
+            std::cout << std::endl;
+        }
+    }
 };
 
 #endif

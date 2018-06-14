@@ -6,10 +6,6 @@
 #include <vector>
 #include "MatchingSchema.h"
 
-// a pair representing a constraint pair
-typedef std::pair<char, char> p_constr;
-
-typedef std::pair<int, int> cell;
 
 /* Utility functions */
 unsigned fast_atoi(const char* str) {
@@ -22,6 +18,11 @@ inline const int min(const int a, const int b, const int c) {
     if ((a<=b) && (a<=c)) return a;
     else if ((b<=a) && (b<=c)) return b;
     else return c;
+}
+
+inline const int max(const int& a, const int& b) {
+    if (a >= b) return a;
+    return b;
 }
 
 inline void read_stdin(std::string& a, std::string& b) {

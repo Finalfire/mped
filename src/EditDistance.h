@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "MatchingSchema.h"
-#include "Matrix.hpp"
+#include "Matrix.h"
 #include "Sequence.hpp"
 #include "DelimitedSequence.h"
 
@@ -20,8 +20,8 @@ private:
     }
 
 public:
-    EditDistance(unsigned r, unsigned c) : n(r), m(c) {
-        matrix = new Matrix<unsigned>(r, c, 0);
+    EditDistance(unsigned r, unsigned c) : n(r+1), m(c+1) {
+        matrix = new Matrix<unsigned>(n, m, 0);
         clear();
     }
 
@@ -43,7 +43,10 @@ public:
                         (*matrix)(i - 1, j) + 1, // deletion
                         (*matrix)(i, j - 1) + 1, // insertion
                         // if in the matching schema there's a false, they match
-                        (*matrix)(i - 1, j - 1) + 1 * m.ms[sig1_index[a.getSeq_repr()[i - 1]]][sig2_index[b.getSeq_repr()[j - 1]]]
+                        (*matrix)(i - 1, j - 1) +
+                            (1 * m.ms
+                                 [sig1_index[a.getSeq_repr()[i - 1]]]
+                                 [sig2_index[b.getSeq_repr()[j - 1]]])
                 );
             }
         }
@@ -51,7 +54,7 @@ public:
         delete[] sig1_index;
         delete[] sig2_index;
 
-        return (*matrix)(a.seq_len(),b.seq_len());
+        return (*matrix)(a.seq_len(), b.seq_len());
     }
 
     unsigned compute_edit(const DelimitedSequence& a, const DelimitedSequence& b, const MatchingSchema& m) {
@@ -67,10 +70,13 @@ public:
         for (size_t i = 1; i < a.seq_len() + 1; i++) {
             for (size_t j = 1; j < b.seq_len() + 1; j++) {
                 (*matrix)(i, j) = min(
-                        (*matrix)(i - 1, j) + 1, // deletion
-                        (*matrix)(i, j - 1) + 1, // insertion
+                        (*matrix)(i-1, j) + 1, // deletion
+                        (*matrix)(i, j-1) + 1, // insertion
                         // if in the matching schema there's a false, they match
-                        (*matrix)(i - 1, j - 1) + 1 * m.ms[sig1_index[a.getSeq_repr()[i - 1]]][sig2_index[b.getSeq_repr()[j - 1]]]
+                        (*matrix)(i-1, j-1) +
+                            (1 * m.ms
+                                 [sig1_index[a.getSeq_repr()[i - 1]]]
+                                 [sig2_index[b.getSeq_repr()[j - 1]]])
                 );
             }
         }
@@ -78,7 +84,7 @@ public:
         delete[] sig1_index;
         delete[] sig2_index;
 
-        return (*matrix)(a.seq_len(),b.seq_len());
+        return (*matrix)(a.seq_len(), b.seq_len());
     }
 
     void print_matrix() {
