@@ -33,7 +33,7 @@ public:
         for (uint i = 0; i < l1; i++) {
             const int endd = std::min(i + match_distance + 1, l2);
             for (int k = max(0, i - match_distance); k < endd; k++) {
-                if (!s2_matches[k] && !ms.ms[sig1_index[a.getSeq_repr()[i]]][sig2_index[b.getSeq_repr()[k]]]) {
+                if (!s2_matches[k] && !ms.ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[k]]]) {
                     s1_matches[i] = true;
                     s2_matches[k] = true;
                     matches++;
@@ -52,7 +52,7 @@ public:
         for (uint i = 0; i < l1; i++)
             if (s1_matches[i]) {
                 while (!s2_matches[k]) k++;
-                if (ms.ms[sig1_index[a.getSeq_repr()[i]]][sig2_index[b.getSeq_repr()[k]]]) t += 0.5;
+                if (ms.ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[k]]]) t += 0.5;
                 k++;
             }
 

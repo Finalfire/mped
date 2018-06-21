@@ -4,8 +4,7 @@
 #include <iostream>
 #include "MatchingSchema.h"
 #include "Matrix.h"
-#include "Sequence.hpp"
-#include "DelimitedSequence.h"
+#include "AbstractSequence.h"
 
 class EditDistance {
 private:
@@ -27,7 +26,8 @@ public:
 
     ~EditDistance() { delete matrix; }
 
-    unsigned compute_edit(const Sequence& a, const Sequence& b, const MatchingSchema& m) {
+    // compute edit normal w/o any permutation of sigma(s)
+    unsigned compute_edit(const AbstractSequence& a, const AbstractSequence& b, const MatchingSchema& m) {
 
         auto* sig1_index = new unsigned[a.sigma_len()];
         for (unsigned i = 0; i < a.sigma_len(); ++i)
@@ -45,8 +45,8 @@ public:
                         // if in the matching schema there's a false, they match
                         (*matrix)(i - 1, j - 1) +
                             (1 * m.ms
-                                 [sig1_index[a.getSeq_repr()[i - 1]]]
-                                 [sig2_index[b.getSeq_repr()[j - 1]]])
+                                 [sig1_index[a.getSequence_repr()[i - 1]]]
+                                 [sig2_index[b.getSequence_repr()[j - 1]]])
                 );
             }
         }
@@ -57,26 +57,26 @@ public:
         return (*matrix)(a.seq_len(), b.seq_len());
     }
 
-    unsigned compute_edit(const DelimitedSequence& a, const DelimitedSequence& b, const MatchingSchema& m) {
+    // compute edit w/ permutations of sigma(s)
+    unsigned compute_edit_enhanced(const AbstractSequence& a, const AbstractSequence& b,
+                          unsigned* sig1, unsigned* sig2, const MatchingSchema& m) {
 
-        unsigned* sig1_index = new unsigned[a.sigma_len()];
+        auto* sig1_index = new unsigned[a.sigma_len()];
         for (unsigned i = 0; i < a.sigma_len(); ++i)
-            sig1_index[a.getSigma_repr()[i]] = i;
+            sig1_index[sig1[i]] = i;
 
-        unsigned* sig2_index = new unsigned[b.sigma_len()];
+        auto* sig2_index = new unsigned[b.sigma_len()];
         for (unsigned i = 0; i < b.sigma_len(); ++i)
-            sig2_index[b.getSigma_repr()[i]] = i;
+            sig2_index[sig2[i]] = i;
 
         for (size_t i = 1; i < a.seq_len() + 1; i++) {
             for (size_t j = 1; j < b.seq_len() + 1; j++) {
                 (*matrix)(i, j) = min(
-                        (*matrix)(i-1, j) + 1, // deletion
-                        (*matrix)(i, j-1) + 1, // insertion
+                        (*matrix)(i - 1, j) + 1, // deletion
+                        (*matrix)(i, j - 1) + 1, // insertion
                         // if in the matching schema there's a false, they match
-                        (*matrix)(i-1, j-1) +
-                            (1 * m.ms
-                                 [sig1_index[a.getSeq_repr()[i - 1]]]
-                                 [sig2_index[b.getSeq_repr()[j - 1]]])
+                        (*matrix)(i - 1, j - 1) +
+                        (1 * m.ms[sig1_index[a.getSequence_repr()[i - 1]]][sig2_index[b.getSequence_repr()[j - 1]]])
                 );
             }
         }

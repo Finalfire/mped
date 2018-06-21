@@ -24,13 +24,11 @@ public:
         unsigned I = 0;
         for (size_t i = 0; i < a.getSigma_repr().size(); i++)
             for (size_t j = i; j < b.getSigma_repr().size(); j++) {
-                if (!m.ms[sig1_index[a.getSeq_repr()[i]]][sig2_index[b.getSeq_repr()[j]]])
+                if (!m.ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[j]]])
                     I++;
             }
 
         // return |A^B| / |A| +  |B| - |A^B|
-
-        std::cout << I << ' ' << a.getSigma_repr().size()  << ' ' << b.getSigma_repr().size() << std::endl;
         return I / (a.getSigma_repr().size() + b.getSigma_repr().size() - I);
     }
 };

@@ -1,32 +1,29 @@
-#ifndef MPED_DELIMITEDSEQUENCE_H_
-#define MPED_DELIMITEDSEQUENCE_H_
+#ifndef MPED_DELIMITEDDSEQUENCE_H
+#define MPED_DELIMITEDDSEQUENCE_H
 
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
+#include "AbstractSequence.h"
 
-
-class DelimitedSequence {
+class DelimitedSequence : public AbstractSequence {
 private:
-    std::string seq;
-    std::string delimiter;
 
     std::map<std::string, unsigned> mapping;
 
     std::vector<std::string> sequence;
     std::vector<std::string> sigma;
 
-    std::vector<unsigned> seq_repr;
-    std::vector<unsigned> sigma_repr;
 
+    // TODO: to provide tokenization for different delimitators
     void extract_tokens() {
         // (1) tokenize seq for whitespace
-        std::istringstream ss{this->seq};
+        std::istringstream ss{this->base};
         using StrIt = std::istream_iterator<std::string>;
         std::vector<std::string> container{StrIt{ss}, StrIt{}};
 
-        // (1.1) save the tokenized sequence
+        // (1.1) save the tokenized base
         sequence = container;
 
         // (2) save distinct tokens
@@ -43,9 +40,9 @@ private:
     }
 
     void fill_representation() {
-        // unsigned representation of the sequence
+        // unsigned representation of the base
         for (auto x: sequence)
-            seq_repr.push_back(mapping.at(x));
+            sequence_repr.push_back(mapping.at(x));
 
         // unsigned representation of the token alphabet
         for (auto x: sigma)
@@ -59,29 +56,11 @@ private:
     }
 
 public:
-
-    DelimitedSequence() = default;
-
-    explicit DelimitedSequence(const char* s, const char* d) : seq(s), delimiter(d) {
-        init();
-    }
-
-    explicit DelimitedSequence(std::string&& s, std::string&& d)  {
-        seq = std::move(s);
-        delimiter = std::move(d);
-
-        init();
-    }
+    DelimitedSequence(const std::string& s) : AbstractSequence(s) { init(); }
+    DelimitedSequence(const char* c) : AbstractSequence(c) { init(); }
 
     const std::vector<std::string> &getSequence() const { return sequence; }
     const std::vector<std::string> &getSigma() const { return sigma; }
-    const std::vector<unsigned int> &getSeq_repr() const { return seq_repr; }
-    const std::vector<unsigned int> &getSigma_repr() const { return sigma_repr; }
-
-    const size_t seq_len() const { return seq_repr.size(); }
-    const size_t sigma_len() const { return sigma_repr.size(); }
-
 };
 
-
-#endif //MPED_DELIMITEDSEQUENCE_HPP
+#endif //MPED_DELIMITEDDSEQUENCE_H

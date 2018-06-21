@@ -1,24 +1,20 @@
-#ifndef SEQUENCE_H
-#define SEQUENCE_H
+#ifndef MPED_SIMPLESEQUENCE_H
+#define MPED_SIMPLESEQUENCE_H
 
-#include <bitset>
 #include <map>
-#include <numeric>
 #include <string>
 #include <vector>
-#include <sstream>
+#include "AbstractSequence.h"
+#include <iostream>
 
 constexpr unsigned short _ASCII_LEN = 255 - 0;
 
-class Sequence {
+class SimpleSequence : public AbstractSequence {
 private:
-    std::string seq;
-    std::string sigma;
-
-    std::vector<unsigned> seq_repr;
-    std::vector<unsigned> sigma_repr;
 
     std::map<char, unsigned> mapping;
+
+    std::string sigma;
 
     void extract_symbols() {
         // Bitset is being used because it allows us to
@@ -26,7 +22,7 @@ private:
         std::bitset<_ASCII_LEN> symbols;
 
         // Here the ASCII value is used to index the bitset
-        for (char i : this->seq)
+        for (char i : this->base)
             symbols[(int) i] = (symbols[(int) i] || true);
 
         // Lexicographic order
@@ -46,8 +42,8 @@ private:
             this->sigma_repr.push_back(i++);
 
         // Mapping from the alphabet
-        for (unsigned i = 0; i < this->seq.size(); )
-            this->seq_repr.push_back(this->mapping[this->seq[i++]]);
+        for (unsigned i = 0; i < this->base.size(); )
+            this->sequence_repr.push_back(this->mapping[this->base[i++]]);
     }
 
     void init() {
@@ -57,35 +53,12 @@ private:
     }
 
 public:
-    Sequence() = default;
+    SimpleSequence() = default;
+    SimpleSequence(const std::string& s) : AbstractSequence(s) { init(); }
+    SimpleSequence(const char* c) : AbstractSequence(c) { init(); }
 
-    explicit Sequence(const char* s) : seq(s) {
-        init();
-    }
-
-    explicit Sequence(std::string&& s)  {
-        seq = std::move(s);
-        init();
-    }
-
-    const std::string& getSeq() const {
-        return seq;
-    }
-
-    const std::string& getSigma() const {
-        return sigma;
-    }
-
-    const std::vector<unsigned int>& getSeq_repr() const {
-        return seq_repr;
-    }
-
-    const std::vector<unsigned int>& getSigma_repr() const {
-        return sigma_repr;
-    }
-
-    const size_t seq_len() const { return seq.size(); }
-    const size_t sigma_len() const { return sigma.size(); }
+    const std::string &getSequence() const {  return base; }
+    const std::string &getSigma() const { return sigma; }
 };
 
-#endif
+#endif //MPED_SIMPLESEQUENCE_H
