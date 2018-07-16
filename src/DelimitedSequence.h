@@ -15,7 +15,6 @@ private:
     std::vector<std::string> sequence;
     std::vector<std::string> sigma;
 
-
     // TODO: to provide tokenization for different delimitators
     void extract_tokens() {
         // (1) tokenize seq for whitespace

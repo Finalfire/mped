@@ -1,7 +1,7 @@
 #ifndef MPED_ES_MATCHINGSCHEMA_H
 #define MPED_ES_MATCHINGSCHEMA_H
 
-#include<vector>
+#include <vector>
 
 const unsigned* const initializeBlocksSwap2E(const std::vector<unsigned>& sig, const size_t& p) {
 	unsigned* const blocksig = new unsigned[sig.size()];

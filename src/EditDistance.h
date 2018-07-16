@@ -5,6 +5,7 @@
 #include "MatchingSchema.h"
 #include "Matrix.h"
 #include "AbstractSequence.h"
+#include "NLP/NLPMatchingSchema.h"
 
 class EditDistance {
 private:

@@ -6,9 +6,6 @@
 
 class AbstractSequence {
 protected:
-
-
-
     std::string base;
 
     std::vector<unsigned> sequence_repr;
