@@ -4,19 +4,19 @@
 #include "../Utility.h"
 #include "../DelimitedSequence.h"
 #include "../MatchingSchema.h"
-#include "Dictionary.h"
+#include "SparseDictionary.h"
 
 class NLPMatchingSchema : public MatchingSchema {
 public:
-    Dictionary dict;
+    SparseDictionary dict;
 
     DelimitedSequence a;
     DelimitedSequence b;
 
     NLPMatchingSchema(const size_t& a, const size_t& b, const size_t& c, const size_t& d,
-                      const bool x, const Dictionary& dict1, const DelimitedSequence& s1,
+                      const bool x, const SparseDictionary& dict1, const DelimitedSequence& s1,
                       const DelimitedSequence& s2) : MatchingSchema(a, b, c, d, x), dict(dict1), a(s1), b(s2) {
-        // only for dic
+        // only for dict
         set_specific(!x);
     }
 
@@ -31,6 +31,20 @@ public:
                 if (i != j && dict.match(a.getSigma().at(i), b.getSigma().at(j)))
                     ms[i][j] = value;
     }
+
+    void print_matching_schema(const DelimitedSequence& sigma1, const DelimitedSequence& sigma2) {
+        std::cout << "\t";
+        for (int j = 0; j < m; ++j)
+            std::cout << sigma2.getSigma()[j] << "\t";
+        std::cout << std::endl;
+        for (int i = 0; i < n; ++i) {
+            std::cout << sigma1.getSigma()[i] << "\t";
+            for (int j = 0; j < m; ++j)
+                std::cout << ms[i][j] << "\t";
+            std::cout << std::endl;
+        }
+    }
+
 
     /*const bool match(const unsigned& i, const unsigned& j) {
         return dict.match(dict.getA().getSequence()[i], dict.getB().getSequence()[i]);

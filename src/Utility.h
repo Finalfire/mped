@@ -2,6 +2,7 @@
 #define UTILITY_H_
 
 #include <climits>
+#include <fstream>
 #include <sstream>
 #include <vector>
 #include "MatchingSchema.h"
@@ -119,6 +120,17 @@ bool isValid(unsigned*& s, int s_size, int p) {
         }
     }
     return true;
+}
+
+std::string readSequenceFromFile(const char* file) {
+    std::fstream f;
+    std::string seq;
+
+    f.open(file, std::fstream::in);
+    getline(f, seq);
+    f.close();
+
+    return seq;
 }
 
 #endif /* UTILITY_H_ */

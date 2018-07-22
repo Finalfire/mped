@@ -16,20 +16,29 @@ private:
     std::vector<std::string> sigma;
 
     // TODO: to provide tokenization for different delimitators
-    void extract_tokens() {
-        // (1) tokenize seq for whitespace
+    void tokenize() {
         std::istringstream ss{this->base};
         using StrIt = std::istream_iterator<std::string>;
         std::vector<std::string> container{StrIt{ss}, StrIt{}};
 
-        // (1.1) save the tokenized base
         sequence = container;
+    }
 
-        // (2) save distinct tokens
+    void create_sigma() {
+        std::vector<std::string> container(sequence);
         std::sort(container.begin(), container.end());
         auto it = std::unique(container.begin(), container.end());
         for (auto i = container.begin(); i != it; i++)
             sigma.push_back(*i);
+    }
+
+
+    void extract_tokens() {
+        // (1) tokenize seq for whitespace and (1.1) save the tokenized base
+        tokenize();
+
+        // (2) save distinct tokens
+        create_sigma();
     }
 
     void define_mapping() {
@@ -58,8 +67,20 @@ public:
     DelimitedSequence(const std::string& s) : AbstractSequence(s) { init(); }
     DelimitedSequence(const char* c) : AbstractSequence(c) { init(); }
 
+    DelimitedSequence(const std::string& s, const DelimitedSequence& d) : AbstractSequence(s) {
+        // here s is defined over sigma of d
+        this->sigma = d.getSigma();
+        this->mapping = d.getMapping();
+
+        // tokenize the sequence
+        tokenize();
+        // fill the integer representation
+        fill_representation();
+    }
+
     const std::vector<std::string> &getSequence() const { return sequence; }
     const std::vector<std::string> &getSigma() const { return sigma; }
+    const std::map<std::string, unsigned int> &getMapping() const { return mapping; }
 };
 
 #endif //MPED_DELIMITEDDSEQUENCE_H

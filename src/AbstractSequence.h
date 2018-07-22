@@ -18,7 +18,7 @@ public:
     const size_t seq_len() const { return sequence_repr.size(); }
     const size_t sigma_len() const { return sigma_repr.size(); }
 
-    const std::string& getSequence() const { return base; }
+    const std::string& getBase() const { return base; }
     const std::vector<unsigned int> &getSequence_repr() const { return sequence_repr; }
     const std::vector<unsigned int> &getSigma_repr() const { return sigma_repr; }
 };

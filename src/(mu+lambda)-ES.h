@@ -8,12 +8,10 @@
 #include "EditDistance.h"
 #include "AbstractSequence.h"
 #include "ES_MatchingSchema.h"
+#include "EvaluationFunctions.h"
 
 
 class ES_mu_p_lambda {
-private:
-
-
 public:
     ES_mu_p_lambda() = default;
 
@@ -95,24 +93,39 @@ public:
         return best.costValue;
     }
 
-    /*int evolutionStrategy(const std::vector<unsigned>& s1,
-                          const std::vector<unsigned>& s2, const size_t& s1l, const size_t& s2l,
-                          const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2,
-                          const size_t& sig1l, const size_t& sig2l,
-                          const size_t& p1, const size_t& p2, matching_schema<bool>& m, edit_distance& e,
-                          const unsigned max_generations, const unsigned mu,
-                          const unsigned lambda) {
+    double evolutionStrategy_ensamble(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w, const unsigned &p1, const unsigned &p2,
+                          const MatchingSchema& m, SparseDictionary& dict, const unsigned& max_generations,
+                          const unsigned& mu, const unsigned& lambda) {
 
+        //Initialize stuff for the mutator swap2-E
+        const unsigned* const blocksig1 = initializeBlocksSwap2E(v[0].getSigma_repr(), p1);
+        const unsigned* const blocksig2 = initializeBlocksSwap2E(w[0].getSigma_repr(), p2);
 
+        ES_MatchingSchema_Ensamble startingMS(v[0].getSigma_repr(), w[0].getSigma_repr());
+        ES_MatchingSchema_Ensamble best;
+        best.costValue = 0;
 
+        //Generate mu random individuals
+        ES_MatchingSchema_Ensamble* parents = new ES_MatchingSchema_Ensamble[mu + lambda];
+        for (unsigned i = 0; i < mu; ++i) {
+            startingMS.shuffle();
+            //startingMS.costValue = e.edit_distance_matching_schema_enhanced(s1, s2, s1l, s2l, startingMS.sigma1, startingMS.sigma2, sig1l, sig2l, m);
+            //startingMS.costValue = e.compute_edit_enhanced(s1, s2, startingMS.sigma1, startingMS.sigma2, m);
+            startingMS.costValue = compute_f(v, w, startingMS.sigma1, startingMS.sigma2, m, dict);
+            parents[i] = startingMS;
+        }
 
+        const unsigned last = mu - 1;
 
-
-
-
+        //Select the worst parent in the pool
+        unsigned worstParentCostValue = parents[0].costValue;
+        for (unsigned i=1; i < mu; i++)
+            if (parents[i].costValue > worstParentCostValue)
+                worstParentCostValue = parents[i].costValue;
 
         unsigned generation = 0;
         while (generation <= max_generations) {
+
             unsigned childrenInPool = 0;
 
             //Generate lambda children. Only mutation, no recombination
@@ -121,14 +134,17 @@ public:
                 const unsigned p = rand() % mu;
 
                 //Produce child, in the case parents=1 (like this) just clone
-                ES_MatchingSchema child = parents[p];
+                ES_MatchingSchema_Ensamble child = parents[p];
 
                 //mutate child
                 child.swap2_enhanced(blocksig1, blocksig2);
 
-                const int newDistance = e.edit_distance_matching_schema_enhanced_with_diagonal(s1, s2, s1l, s2l, child.sigma1, child.sigma2, sig1l, sig2l, m, worstParentCostValue);
+                //const int newDistance = e.edit_distance_matching_schema_enhanced_with_diagonal(s1, s2, s1l, s2l, child.sigma1, child.sigma2, sig1l, sig2l, m, worstParentCostValue);
+                //const int newDistance = e.compute_edit_enhanced(s1, s2, child.sigma1, child.sigma2, m);
+                const double newDistance = compute_f(v, w, child.sigma1, child.sigma2, m, dict);
 
-                if (newDistance != -1) {
+                //if (newDistance != -1) {
+                if (newDistance > child.costValue) {
                     //The child is better than the worst parent,
                     child.costValue = newDistance;
 
@@ -139,12 +155,11 @@ public:
             }
 
             //sorting for selecting the best mu individuals and at the same time get the worst parent
-            std::sort(parents, parents+mu+childrenInPool);
-
+            std::sort(parents, parents + mu + childrenInPool);
             worstParentCostValue = parents[last].costValue;
 
             //Make a random_shuffle for keeping high entropy
-            std::random_shuffle(parents,parents+mu);
+            std::random_shuffle(parents, parents+mu);
 
             generation++;
         }
@@ -157,7 +172,7 @@ public:
         delete[] parents;
 
         return best.costValue;
-    }*/
+    }
 };
 
 #endif

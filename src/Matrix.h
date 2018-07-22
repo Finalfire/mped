@@ -1,7 +1,7 @@
 #ifndef MATRIX_H_
 #define MATRIX_H_
 
-template<typename T>
+template <typename T>
 class Matrix {
 private:
     T* m;
