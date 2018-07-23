@@ -48,7 +48,7 @@ void single_child(DelimitedSequence& union_en, DelimitedSequence& union_it,
     unsigned mu = muu;
     unsigned lambda = l;
 
-    for (unsigned p = 1; p <= 3; p++) {
+    for (unsigned p = 1; p <= 4; p++) {
         // create a matching schema M on these words
         NLPMatchingSchema m(union_en.sigma_len(), union_it.sigma_len(), p, p, true, dict, union_en, union_it);
         call_es(en_sentences, it_sentences, p, p, m, dict, 1000, mu, lambda);

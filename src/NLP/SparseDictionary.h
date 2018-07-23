@@ -26,6 +26,10 @@ private:
         f.open(file, std::fstream::in);
 
         // collect all words
+        // this works due to the dictionary syntax being
+        // word_en_1 word_it_1
+        // ...
+        // word_en_n word_it_n
         std::string temp;
         while (f.good()) {
             f >> temp;
@@ -93,7 +97,7 @@ public:
     }
 
     /*
-     * Check where there exists a pair `<a,b>` in the dictionary
+     * It checks where there exists a pair `<a,b>` in the dictionary
      * where `a` is a word in the english collection and `b` is a word in the italian one
      */
     const bool match(const std::string& a, const std::string& b) const {
