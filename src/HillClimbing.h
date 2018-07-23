@@ -140,10 +140,10 @@ public:
         return minMinDist;
     }
 
-    double hillclimbing_ensamble(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w,
+    /*double hillclimbing_ensamble(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w,
                      const unsigned& p1, const unsigned& p2, const MatchingSchema &m, SparseDictionary& dict) {
 
-        double d = compute_f(v, w, m, dict);
+        double d = compute_jaro(v, w, m, dict);
         double minDist = d, minMinDist = d;
 
         unsigned sig1l = v[0].sigma_len();
@@ -195,7 +195,7 @@ public:
 
                             //int newDistance = e.edit_distance_matching_schema_enhanced_with_diagonal(s1, s2, s1l, s2l, sigma1_o, sigma2_o, sig1l, sig2l, m, minDist);
                             //int newDistance = e.compute_edit_enhanced(s1, s2, sigma1_o, sigma2_o, m);
-                            double newDistance = compute_f(v, w, sigma1_o, sigma2_o, m, dict);
+                            double newDistance = compute_jaro(v, w, sigma1_o, sigma2_o, m, dict);
 
                             if (newDistance > minDist) {
                                 minDist = newDistance;
@@ -238,7 +238,7 @@ public:
 
                     // random swap
                     // for sigma1, we try _SHUFFLE_TRIES times, then if is still not valid, we retry with the original one
-                    for (k_shuffle = 0; k_shuffle < shuffle_tries /*&& !isValid(sigma1_t, sig1l, p1)*/; ++k_shuffle)
+                    for (k_shuffle = 0; k_shuffle < shuffle_tries && !isValid(sigma1_t, sig1l, p1); ++k_shuffle)
                         shuffle(sigma1_t, sig1l);
 
                     if (k_shuffle == shuffle_tries) std::copy(sigma1_o, sigma1_o + sig1l, sigma1_t);
@@ -265,7 +265,7 @@ public:
         delete[] sigma2_min_min;
 
         return minMinDist;
-    }
+    }*/
 
 };
 
