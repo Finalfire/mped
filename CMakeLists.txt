@@ -1,10 +1,25 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(MPED)
 
 set(CMAKE_CXX_STANDARD 11)
-set(SOURCE_FILES src/)
 
-# this is needed in order to use the angles include, e.g., #include <tclap/CmdLine.h>
-#include_directories(${SOURCE_FILES}/include)
+include_directories(src)
+include_directories(src/NLP)
+include_directories(src/weighted-matching)
 
-add_executable(MPED src/main.cpp src/Utility.h src/Jaccard.h src/HillClimbing.h src/AbstractSequence.h src/SimpleSequence.h src/DelimitedSequence.h src/ES_MatchingSchema.h src/Metric.h src/NLP/NLPMatchingSchema.h src/NLP/SparseDictionary.h src/EvaluationFunctions.h)
+add_executable(MPED
+        src/NLP/MegaSigma.h
+        src/NLP/NLPMatchingSchema.h
+        src/NLP/NLPMatchingSchemaFixed.h
+        src/NLP/SparseDictionary.h
+        "src/(mu+lambda)-ES.h"
+        src/sequence/AbstractSequence.h
+        src/sequence/DelimitedSequence.h
+        src/ES_MatchingSchema.h
+        src/EvaluationFunctions.h
+        src/Jaro.h
+        src/main.cpp
+        src/MatchingSchema.h
+        src/utility/Matrix.h
+        src/sequence/SimpleSequence.h
+        src/utility/Utility.h)

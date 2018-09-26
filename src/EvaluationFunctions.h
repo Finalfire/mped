@@ -1,96 +1,85 @@
 #ifndef MPED_EVALUATIONFUNCTIONS_H
 #define MPED_EVALUATIONFUNCTIONS_H
 
-double compute_jaro(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w,
-                 const MatchingSchema &m, SparseDictionary& dict) {
+class EvaluationFunctions {
 
-    // compute Jaro for each pair
-    std::vector<double> jaros;
-    for (size_t i = 0; i < v.size(); i++)
-        jaros.push_back(Jaro::compute(v[i], w[i], m, dict));
+public:
 
-    double sum = std::accumulate(jaros.begin(), jaros.end(), 0.0);
-    return sum / (double) jaros.size();
-}
+    /// Computes the Jaro distance for each pair {a,b} of strings using sigma permutations,
+    /// then returns the weighted (on max length) avg over all pairs.
+    /// @param v
+    /// @param w
+    /// @param sig1
+    /// @param sig2
+    /// @param m
+    /// @param dict
+    /// @return weighted avg over all pairs of strings
+    static double compute_jaro_wavg_ws(const std::vector<DelimitedSequence> &v, const std::vector<DelimitedSequence> &w,
+                                unsigned *sig1, unsigned *sig2,
+                                const NLPMatchingSchemaFixed &m, SparseDictionary &dict) {
 
-double compute_jaro(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w, unsigned* sig1, unsigned* sig2,
-                 const MatchingSchema &m, SparseDictionary& dict) {
+        // indexes used for the lookup on the matching schema
+        std::vector<unsigned> sig1_index(v[0].sigma_len());
+        for (unsigned i = 0; i < v[0].sigma_len(); i++)
+            sig1_index[sig1[i]] = i;
 
-    // compute Jaro for each pair
-    std::vector<double> jaros;
-    for (size_t i = 0; i < v.size(); i++)
-        jaros.push_back(Jaro::compute(v[i], w[i], sig1, sig2, m, dict));
+        std::vector<unsigned> sig2_index(w[0].sigma_len());
+        for (unsigned i = 0; i < w[0].sigma_len(); i++)
+            sig2_index[sig2[i]] = i;
 
-    double sum = std::accumulate(jaros.begin(), jaros.end(), 0.0);
-    return sum / (double) jaros.size();
-}
+        // compute Jaro for each pair
+        //std::vector<double> distances;
+        double distance = 0.0;
+        double weights = 0.0;
+        size_t max_length = 0;
 
-double compute_jaro_wavg(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w, unsigned* sig1, unsigned* sig2,
-                 const MatchingSchema &m, SparseDictionary& dict) {
+        for (size_t i = 0; i < v.size(); i++) {
+            for (size_t j = i; j < w.size(); j++) {
+                max_length = std::max(v[i].seq_len(), w[j].seq_len());
+                //distances.push_back(Jaro::compute_ws(v[i], w[j], sig1, sig2, m, dict, sig1_index, sig2_index) * (double) max_length);
+                distance += (Jaro::compute_ws(v[i], w[j], sig1, sig2, m, dict, sig1_index, sig2_index) *
+                             (double) max_length);
+                weights += (double) max_length;
+            }
+        }
 
-    // compute Jaro for each pair
-    std::vector<double> jaros;
-    double weights = 0.0;
-    size_t max_length = 0;
-
-    for (size_t i = 0; i < v.size(); i++) {
-        max_length = std::max(v[i].seq_len(), w[i].seq_len());
-        jaros.push_back(Jaro::compute(v[i], w[i], sig1, sig2, m, dict) * (double) max_length);
-        weights += (double) max_length;
+        //double sum = std::accumulate(distances.begin(), distances.end(), 0.0);
+        return distance / weights;
     }
 
-    double sum = std::accumulate(jaros.begin(), jaros.end(), 0.0);
-    return sum / weights;
-}
+    /**
+     * Computes the Jaro distance for each pair {a,b} of strings using only the dict (case pi = 0)
+     * then returns the weighted (on max length) avg over all pairs.
+     * @param v
+     * @param w
+     * @param sig1
+     * @param sig2
+     * @param m
+     * @param dict
+     * @return weighted avg over all pairs of strings
+     */
+    static double compute_jaro_wavg_only_dict_ws(const std::vector<DelimitedSequence> &v, const std::vector<DelimitedSequence> &w,
+                                   SparseDictionary &dict) {
 
-double compute_edit(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w, unsigned* sig1, unsigned* sig2,
-                    const MatchingSchema &m, SparseDictionary& dict) {
+        // compute Jaro for each pair
+        //std::vector<double> distances;
+        double distance = 0.0;
+        double weights = 0.0;
+        size_t max_length = 0;
 
-    // compute edit for each pair
-    std::vector<double> edits;
-    unsigned max_length = 0;
+        for (size_t i = 0; i < v.size(); i++) {
+            for (size_t j = i; j < w.size(); j++) {
+                max_length = std::max(v[i].seq_len(), w[j].seq_len());
+                //distances.push_back(Jaro::compute_only_dict(v[i], w[j], dict) * (double) max_length);
+                distance += (Jaro::compute_only_dict(v[i], w[j], dict) * (double) max_length);
+                weights += (double) max_length;
+            }
+        }
 
-    for (size_t i = 0; i < v.size(); i++) {
-        EditDistance e(v[i].seq_len(), w[i].seq_len());
-        max_length = std::max(v[i].seq_len(), w[i].seq_len());
-        unsigned d = e.compute_edit_enhanced(v[i], w[i], sig1, sig2, m, dict);
-        edits.push_back(d / (double) max_length);
+        //double sum = std::accumulate(distances.begin(), distances.end(), 0.0);
+        return distance / weights;
     }
 
-    double sum = std::accumulate(edits.begin(), edits.end(), 0.0);
-    return sum / (double) edits.size();
-}
-
-double compute_jaccard(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w, unsigned* sig1, unsigned* sig2,
-                 const MatchingSchema &m, SparseDictionary& dict) {
-
-    // compute Jaro for each pair
-    std::vector<double> jaccards;
-    for (size_t i = 0; i < v.size(); i++)
-        jaccards.push_back(Jaccard::compute(v[i], w[i], sig1, sig2, m, dict));
-
-    double sum = std::accumulate(jaccards.begin(), jaccards.end(), 0.0);
-    return sum / (double) jaccards.size();
-}
-
-double compute_jaccard_wavg(const std::vector<DelimitedSequence>& v, const std::vector<DelimitedSequence>& w, unsigned* sig1, unsigned* sig2,
-                       const MatchingSchema &m, SparseDictionary& dict) {
-
-    // compute Jaro for each pair
-    std::vector<double> jaccards;
-    double weights = 0.0;
-    unsigned max_length = 0;
-
-    for (size_t i = 0; i < v.size(); i++) {
-        max_length = std::max(v[i].seq_len(), w[i].seq_len());
-        jaccards.push_back(Jaccard::compute(v[i], w[i], sig1, sig2, m, dict));
-        weights += (double) max_length;
-    }
-
-    double sum = std::accumulate(jaccards.begin(), jaccards.end(), 0.0);
-    return sum / weights;
-}
-
-
+};
 
 #endif //MPED_EVALUATEFUNCTIONS_H

@@ -21,7 +21,7 @@ public:
     }
 
     ~Matrix() {
-        delete[] (T*) m;
+        delete[] m;
     }
 
     // set operator: to be used as m(i,j) = k

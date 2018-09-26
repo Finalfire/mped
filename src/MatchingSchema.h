@@ -1,7 +1,7 @@
 #ifndef MATCHINGSCHEMA_H_
 #define MATCHINGSCHEMA_H_
 
-#include "Utility.h"
+#include "utility/Utility.h"
 
 struct MatchingSchema {
     size_t n, m;

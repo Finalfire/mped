@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "AbstractSequence.h"
+#include "NLP/MegaSigma.h"
 
 class DelimitedSequence : public AbstractSequence {
 private:
@@ -20,7 +21,6 @@ private:
         std::istringstream ss{this->base};
         using StrIt = std::istream_iterator<std::string>;
         std::vector<std::string> container{StrIt{ss}, StrIt{}};
-
         sequence = container;
     }
 
@@ -76,6 +76,25 @@ public:
         tokenize();
         // fill the integer representation
         fill_representation();
+    }
+
+    DelimitedSequence(const std::string& s, const MegaSigma& m) : AbstractSequence(s) {
+        // here s is defined over MEGASIGMA
+        // 1. tokenize the string
+        tokenize();
+
+        // 2. define the mapping over MEGASIGMA
+        mapping = m.getMapping();
+
+        // 3. define the sigma for this string which is the part of the "sigma" in the megasigma
+        for (size_t i = m.getStart_sigma(); i < m.getSymbols().size(); i++)
+            sigma.push_back(m.getSymbols()[i]);
+
+        // 4. make the representations
+        for (auto x: sequence)
+            sequence_repr.push_back(mapping.at(x));
+        for (auto x: sigma)
+            sigma_repr.push_back(mapping.at(x));
     }
 
     const std::vector<std::string> &getSequence() const { return sequence; }

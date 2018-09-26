@@ -1,8 +1,8 @@
 #ifndef MPED_NLPMATCHINGSCHEMA_H
 #define MPED_NLPMATCHINGSCHEMA_H
 
-#include "../Utility.h"
-#include "../DelimitedSequence.h"
+#include "utility/Utility.h"
+#include "sequence/DelimitedSequence.h"
 #include "../MatchingSchema.h"
 #include "SparseDictionary.h"
 

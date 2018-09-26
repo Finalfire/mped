@@ -2,9 +2,13 @@
 #define MPED_SPARSEDICTIONARY_H
 
 #include <fstream>
+#include <vector>
+#include <map>
 
 class SparseDictionary {
 private:
+
+    // dictionary is a matrix of bool
     typedef std::vector<bool> row;
     std::vector<row> dictionary;
 
