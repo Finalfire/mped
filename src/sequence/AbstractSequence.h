@@ -12,8 +12,8 @@ protected:
     std::vector<unsigned> sigma_repr;
 
 public:
-    AbstractSequence(const std::string& s) : base(s) {}
-    AbstractSequence(const char* s) : base(s) {}
+    explicit AbstractSequence(const std::string& s) : base(s) {}
+    explicit AbstractSequence(const char* s) : base(s) {}
 
     const size_t seq_len() const { return sequence_repr.size(); }
     const size_t sigma_len() const { return sigma_repr.size(); }

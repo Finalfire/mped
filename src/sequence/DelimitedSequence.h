@@ -49,11 +49,11 @@ private:
 
     void fill_representation() {
         // unsigned representation of the base
-        for (auto x: sequence)
+        for (const auto& x: sequence)
             sequence_repr.push_back(mapping.at(x));
 
         // unsigned representation of the token alphabet
-        for (auto x: sigma)
+        for (const auto& x: sigma)
             sigma_repr.push_back(mapping.at(x));
     }
 

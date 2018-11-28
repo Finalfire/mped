@@ -53,9 +53,8 @@ private:
     }
 
 public:
-    SimpleSequence() = default;
-    SimpleSequence(const std::string& s) : AbstractSequence(s) { init(); }
-    SimpleSequence(const char* c) : AbstractSequence(c) { init(); }
+    explicit SimpleSequence(const std::string& s) : AbstractSequence(s) { init(); }
+    explicit SimpleSequence(const char* c) : AbstractSequence(c) { init(); }
 
     const std::string &getSequence() const {  return base; }
     const std::string &getSigma() const { return sigma; }
