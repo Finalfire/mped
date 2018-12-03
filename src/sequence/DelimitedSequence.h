@@ -3,6 +3,8 @@
 
 #include <map>
 #include <sstream>
+#include <iterator>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "AbstractSequence.h"
