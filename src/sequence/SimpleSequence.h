@@ -6,6 +6,7 @@
 #include <vector>
 #include "AbstractSequence.h"
 #include <iostream>
+#include <bitset>
 
 constexpr unsigned short _ASCII_LEN = 255 - 0;
 
