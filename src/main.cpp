@@ -6,7 +6,6 @@
 #include "sequence/DelimitedSequence.h"
 #include "sequence/SimpleSequence.h"
 
-
 #include "MatchingSchema.h"
 #include "metric/EditDistance.h"
 #include "metric/Jaro.h"

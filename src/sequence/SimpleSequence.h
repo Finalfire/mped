@@ -4,8 +4,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "AbstractSequence.h"
 #include <iostream>
+
+#include "AbstractSequence.h"
 
 constexpr unsigned short _ASCII_LEN = 255 - 0;
 
