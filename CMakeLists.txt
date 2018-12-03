@@ -7,4 +7,4 @@ set(SOURCE_FILES src/)
 # this is needed in order to use the angles include, e.g., #include <tclap/CmdLine.h>
 #include_directories(${SOURCE_FILES}/include)
 
-add_executable(MPED src/main.cpp src/Utility.h src/sequence/AbstractSequence.h src/sequence/SimpleSequence.h src/sequence/DelimitedSequence.h)
+add_executable(MPED src/main.cpp src/Matrix.h src/Utility.h src/sequence/AbstractSequence.h src/sequence/SimpleSequence.h src/sequence/DelimitedSequence.h)

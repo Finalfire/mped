@@ -12,7 +12,7 @@
 #include "metric/Jaro.h"
 
 void prova_seq() {
-    SimpleSequence a("aaaaabcdeeef");
+    SimpleSequence a("aaaaabcdeeee");
     SimpleSequence b("hhhhhijkpppp");
 
     std::cout << a.getSequence() << ' ' << a.getSigma() << std::endl;
@@ -34,8 +34,8 @@ void prova_seq() {
 }
 
 void token_seq() {
-    DelimitedSequence a("A B C D E", " ");
-    DelimitedSequence b("A X Y Z Q", " ");
+    DelimitedSequence a("A B C D E");
+    DelimitedSequence b("A X Y Z Q");
 
     std::cout << a.sigma_len() << ',' << b.sigma_len() << std::endl;
 
@@ -45,19 +45,25 @@ void token_seq() {
     std::cout << Jaro::jaro("MARTHA", "MARHTA") << std::endl;           // 0.94
     std::cout << Jaro::jaro("DIXON", "DICKSONX") << std::endl;          // 0.76
     std::cout << Jaro::jaro("JELLYFISH", "SMELLYFISH") << std::endl;    // 0.89
+
+    EditDistance e(a.seq_len(), b.seq_len());
+    std::cout << e.compute_edit(a, b, m) << std::endl;
 }
 
 int main(int argc, char** argv) {
     std::ios_base::sync_with_stdio(false);
 
-    //prova_seq();
-    //token_seq();
-
-    AbstractSequence s("ciao");
+    /*AbstractSequence s("ciao");
     std::cout << s.getBase() << std::endl;
 
     DelimitedSequence d("ciao bella uagliu");
     std::cout << d.getBase() << std::endl;
+
+    MatchingSchema m(10, 10, 2, 2, true);
+    m.print_matching_schema();*/
+
+    prova_seq();
+    token_seq();
 
     return 0;
 }

@@ -13,7 +13,6 @@ class SimpleSequence : public AbstractSequence {
 private:
 
     std::map<char, unsigned> mapping;
-
     std::string sigma;
 
     void extract_symbols() {
@@ -32,7 +31,7 @@ private:
     }
 
     void define_mapping() {
-        for (size_t i = 0; i < this->sigma.size(); ++i)
+        for (size_t i = 0; i < this->sigma.size(); i++)
             mapping.insert(std::pair<char, unsigned>(this->sigma[i], i));
     }
 

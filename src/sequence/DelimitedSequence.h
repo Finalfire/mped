@@ -67,17 +67,6 @@ public:
     DelimitedSequence(const std::string& s) : AbstractSequence(s) { init(); }
     DelimitedSequence(const char* c) : AbstractSequence(c) { init(); }
 
-    DelimitedSequence(const std::string& s, const DelimitedSequence& d) : AbstractSequence(s) {
-        // here s is defined over sigma of d
-        this->sigma = d.getSigma();
-        this->mapping = d.getMapping();
-
-        // tokenize the sequence
-        tokenize();
-        // fill the integer representation
-        fill_representation();
-    }
-
     const std::vector<std::string> &getSequence() const { return sequence; }
     const std::vector<std::string> &getSigma() const { return sigma; }
     const std::map<std::string, unsigned int> &getMapping() const { return mapping; }
