@@ -6,11 +6,15 @@
 #include "sequence/DelimitedSequence.h"
 #include "sequence/SimpleSequence.h"
 
-#include "MatchingSchema.h"
 #include "metric/EditDistance.h"
+#include "heuristic/EvolutionStrategy.h"
 #include "metric/Jaro.h"
+#include "MPED.h"
+#include "heuristic/individual/Shuffle.h"
+#include "heuristic/individual/Swap2.h"
 
-void prova_seq() {
+
+/*void prova_seq() {
     SimpleSequence a("aaaaabcdeeee");
     SimpleSequence b("hhhhhijkpppp");
 
@@ -47,22 +51,21 @@ void token_seq() {
 
     EditDistance e(a.seq_len(), b.seq_len());
     std::cout << e.compute_edit(a, b, m) << std::endl;
-}
+}*/
 
 int main(int argc, char** argv) {
     std::ios_base::sync_with_stdio(false);
+    // initialize the random number generator (with seed)
+    std::srand(unsigned(std::time(NULL)));
 
-    /*AbstractSequence s("ciao");
-    std::cout << s.getBase() << std::endl;
+    const size_t matchingSize1 = 1, matchingSize2 = 1;
+    SimpleSequence s1("scadcaacsdtsadsdccscddtattscsdaadtsttdastsadsdcsdd");
+    SimpleSequence s2("vvmktvtvkkvccmtmvtcvmvvckmkkctctttcvmvmckmvtkkvctt");
+    EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len());
+    EvolutionStrategy<Swap2_E> h(metric, 120, 30, 120);
 
-    DelimitedSequence d("ciao bella uagliu");
-    std::cout << d.getBase() << std::endl;
-
-    MatchingSchema m(10, 10, 2, 2, true);
-    m.print_matching_schema();*/
-
-    prova_seq();
-    token_seq();
+    MPED mped(s1, s2, matchingSize1, matchingSize2, metric, h);
+    std::cout << "DISTANCE: "<<mped.compute_edit_heuristic() << std::endl;
 
     return 0;
 }

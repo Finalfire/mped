@@ -9,10 +9,10 @@
 
 class Heuristic {
 protected:
-    Metric& metric;
+    Metric* metric;
 
 public:
-    explicit Heuristic(Metric& m):metric(m){};
+    explicit Heuristic(Metric* m):metric(m){};
 
     virtual unsigned compute_heuristic(const AbstractSequence&, const AbstractSequence&) {};
 

@@ -19,8 +19,8 @@ public:
     const size_t sigma_len() const { return sigma_repr.size(); }
 
     const std::string& getBase() const { return base; }
-    const std::vector<unsigned int> &getSequence_repr() const { return sequence_repr; }
-    const std::vector<unsigned int> &getSigma_repr() const { return sigma_repr; }
+    const std::vector<unsigned> &getSequence_repr() const { return sequence_repr; }
+    const std::vector<unsigned> &getSigma_repr() const { return sigma_repr; }
 };
 
 #endif //MPED_ABSTRACTSEQUENCE_H
