@@ -26,6 +26,25 @@ public:
 
     ~EditDistance() { delete matrix; }
 
+    // compute edit over two strings
+    unsigned compute_edit(const std::string& a, const std::string& b) {
+        for (size_t i = 1; i < a.size() + 1; i++) {
+            for (size_t j = 1; j < b.size() + 1; j++) {
+
+                bool w = a[i-1] == b[j-1];
+
+                (*matrix)(i, j) = min(
+                        (*matrix)(i - 1, j) + 1, // deletion
+                        (*matrix)(i, j - 1) + 1, // insertion
+                        // if in the matching schema there's a false, they match
+                        (*matrix)(i - 1, j - 1) + (1 * !w)
+                );
+            }
+        }
+
+        return (*matrix)(a.size(), b.size());
+    }
+
     // compute edit normal w/o any permutation of sigma(s)
     unsigned compute_edit(const AbstractSequence& a, const AbstractSequence& b, const MatchingSchema& m) {
         for (size_t i = 1; i < a.seq_len() + 1; i++) {
