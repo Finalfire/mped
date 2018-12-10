@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     SimpleSequence s1("scadcaacsdtsadsdccscddtattscsdaadtsttdastsadsdcsdd");
     SimpleSequence s2("vvmktvtvkkvccmtmvtcvmvvckmkkctctttcvmvmckmvtkkvctt");
     EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len());
-    EvolutionStrategy<Swap2_Swap3> h(metric, 120, 30, 120);
+    EvolutionStrategy<Shuffle> h(metric, 120, 30, 120);
 
     MPED mped(s1, s2, matchingSize1, matchingSize2, metric, h);
     std::cout << "DISTANCE: "<<mped.compute_edit_heuristic() << std::endl;

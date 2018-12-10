@@ -14,7 +14,7 @@ protected:
 public:
     explicit Heuristic(Metric* m):metric(m){};
 
-    virtual unsigned compute_heuristic(const AbstractSequence&, const AbstractSequence&) {};
+    virtual unsigned compute_heuristic(const AbstractSequence&, const AbstractSequence&) { return 0; };
 
 };
 

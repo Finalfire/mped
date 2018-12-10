@@ -22,8 +22,8 @@ public:
     Metric(){}
     virtual ~Metric() {}
 
-    virtual unsigned compute_distance(const AbstractSequence& a, const AbstractSequence& b) {};
-    virtual unsigned compute_distance_enhanced(const AbstractSequence& a, const AbstractSequence& b, const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2) {};
+    virtual unsigned compute_distance(const AbstractSequence& a, const AbstractSequence& b) { return 0; };
+    virtual unsigned compute_distance_enhanced(const AbstractSequence& a, const AbstractSequence& b, const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2) { return 0; };
 
     void setMatchingSchema(MatchingSchema* ms){
         this->matchingSchema = ms;

@@ -24,7 +24,7 @@ public:
     };
 
     // default constructor
-    /*individual(): sigma1l(0), sigma2l(0){
+    /*Individual(): sigma1l(0), sigma2l(0){
         costValue = 0;
     }*/
 
@@ -42,19 +42,19 @@ public:
         costValue = c;
     }
 
-    unsigned getCostValue(){
+    unsigned getCostValue() const {
         return costValue;
     }
 
-    const std::vector<unsigned>& getSigma1(){
+    const std::vector<unsigned>& getSigma1() const {
         return sigma1;
     }
 
-    const std::vector<unsigned>& getSigma2(){
+    const std::vector<unsigned>& getSigma2() const {
         return sigma2;
     }
 
-    bool operator<(Individual& m)
+    bool operator<(const Individual& m) const
     {
         return this->getCostValue() < m.getCostValue();
     }
