@@ -7,17 +7,24 @@
 #include "../sequence/DelimitedSequence.h"
 #include "../MatchingSchema.h"
 #include "../Utility.h"
+#include "Metric.h"
 
-class Jaro {
+class Jaro : public Metric {
+
 public:
-    static double compute(const DelimitedSequence& a, const DelimitedSequence& b, const MatchingSchema& ms) {
+
+    Jaro(MatchingSchema* m) : Metric(m) {}
+
+    double compute_distance_enhanced(const DelimitedSequence& a, const DelimitedSequence& b,
+            const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2) {
+
         std::vector<unsigned> sig1_index(a.sigma_len());
         for (unsigned i = 0; i < a.sigma_len(); i++)
-            sig1_index[a.getSigma_repr()[i]] = i;
+            sig1_index[sig1[i]] = i;
 
         std::vector<unsigned> sig2_index(b.sigma_len());
         for (unsigned i = 0; i < b.sigma_len(); i++)
-            sig2_index[b.getSigma_repr()[i]] = i;
+            sig2_index[sig2[i]] = i;
 
         const uint l1 = a.seq_len();
         const uint l2 = b.seq_len();
@@ -36,7 +43,7 @@ public:
             const int endd = std::min(i + match_distance + 1, l2);
             for (int k = max(0, i - match_distance); k < endd; k++) {
                 if (!s2_matches[k] &&
-                    ((!ms.ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[k]]]))) {
+                    ((!this->matchingSchema->ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[k]]]))) {
 
                     s1_matches[i] = true;
                     s2_matches[k] = true;
@@ -54,7 +61,7 @@ public:
         for (uint i = 0; i < l1; i++)
             if (s1_matches[i]) {
                 while (!s2_matches[k]) k++;
-                if (ms.ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[k]]]) t += 0.5;
+                if (!this->matchingSchema->ms[sig1_index[a.getSequence_repr()[i]]][sig2_index[b.getSequence_repr()[k]]]) t += 0.5;
                 k++;
             }
 

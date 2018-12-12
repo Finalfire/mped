@@ -19,7 +19,7 @@ protected:
 
 public:
 
-    Metric(){}
+    Metric(MatchingSchema* m) : matchingSchema(m) {}
     virtual ~Metric() {}
 
     virtual unsigned compute_distance(const AbstractSequence& a, const AbstractSequence& b) { return 0; };

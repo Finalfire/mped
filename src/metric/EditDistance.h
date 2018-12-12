@@ -18,7 +18,7 @@ private:
 
 public:
 
-    EditDistance(unsigned r, unsigned c):Metric(), n(r+1), m(c+1){
+    EditDistance(unsigned r, unsigned c, MatchingSchema* ms) : Metric(ms), n(r+1), m(c+1) {
         matrix = new Matrix<unsigned>(n, m , 0);
         clear();
     };

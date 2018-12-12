@@ -9,6 +9,7 @@
 #include "metric/EditDistance.h"
 #include "heuristic/EvolutionStrategy.h"
 #include "metric/Jaro.h"
+
 #include "MPED.h"
 #include "heuristic/individual/Shuffle.h"
 #include "heuristic/individual/Swap2.h"
@@ -17,6 +18,8 @@
 #include "heuristic/individual/Inversion.h"
 #include "heuristic/individual/Translocation.h"
 #include "heuristic/individual/Swap2_Swap3.h"
+
+#include "heuristic/HillClimbing/HillClimbing.h"
 
 
 /*void prova_seq() {
@@ -60,17 +63,28 @@ void token_seq() {
 
 int main(int argc, char** argv) {
     std::ios_base::sync_with_stdio(false);
+
     // initialize the random number generator (with seed)
     std::srand(unsigned(std::time(NULL)));
 
-    const size_t matchingSize1 = 1, matchingSize2 = 1;
-    SimpleSequence s1("scadcaacsdtsadsdccscddtattscsdaadtsttdastsadsdcsdd");
-    SimpleSequence s2("vvmktvtvkkvccmtmvtcvmvvckmkkctctttcvmvmckmvtkkvctt");
-    EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len());
-    EvolutionStrategy<Shuffle> h(metric, 120, 30, 120);
+    const size_t p1 = 1, p2 = 1;
+    // exact solution: 24
+    SimpleSequence s1("odkoodokogdkdkodgoddokkdkdgkogooddodgkkgkokdoooddg");
+    SimpleSequence s2("ensnmememnssnesnseeesennnmmnmmsneeesnsnnsssememmnm");
 
-    MPED mped(s1, s2, matchingSize1, matchingSize2, metric, h);
-    std::cout << "DISTANCE: "<<mped.compute_edit_heuristic() << std::endl;
+    MatchingSchema* m = new MatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2, true);
+    EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len(), m);
+
+    EvolutionStrategy<Shuffle> h_es(metric, 120, 30, 120);
+    HillClimbing h_hc(metric);
+
+    MPED mped(s1, s2, p1, p2, metric, h_es);
+    std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
+    mped.setHeuristic(h_hc);
+    std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
+
+    delete metric;
+    delete m;
 
     return 0;
 }

@@ -35,7 +35,6 @@ public:
     }
 
 
-
     void updateParameters(const AbstractSequence& s1, const AbstractSequence& s2, const size_t p1, const size_t p2){
         this->s1 = s1;
         this->s2 = s2;
@@ -46,6 +45,10 @@ public:
         this->s1 = s1;
         this->s2 = s2;
         initMatchingSchema(s1.sigma_len(), s2.sigma_len(), 1, 1);
+    }
+
+    void setHeuristic(const Heuristic& h) {
+        this->heuristic = h;
     }
 
     unsigned compute_edit(){

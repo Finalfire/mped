@@ -1,65 +1,116 @@
 #ifndef MPED_HILLCLIMBING_H
 #define MPED_HILLCLIMBING_H
 
+#include <numeric>
+#include <vector>
+
 #include "../Heuristic.h"
 #include "../../sequence/AbstractSequence.h"
 
+struct Permutation {
+    std::vector<unsigned> perm;
+
+    Permutation(size_t k) : perm(k) {
+        std::iota(perm.begin(), perm.end(), 0);
+    }
+};
+
 class HillClimbing : public Heuristic {
+private:
 
-    unsigned compute_heuristic(const AbstractSequence&, const AbstractSequence&) {
-        unsigned
+    const unsigned MAX_ATTEMPTS = 1;
 
-        /*
-         p = permutazione_di_partenza
+public:
 
-         m = p.get_ms()
-         d = distanza_attuale
+    HillClimbing(Metric* m) : Heuristic(m) {};
 
-         min_dist = d
-         best_ms = 0
+    unsigned compute_heuristic(const AbstractSequence& a, const AbstractSequence& b) {
+        Permutation p1(a.sigma_len());
+        Permutation p2(b.sigma_len());
+        unsigned d = this->metric->compute_distance_enhanced(a, b, p1.perm, p2.perm);
 
-         top_dist = min_dist
-         top_ms = 0
+        unsigned min_dist = d;
+        Permutation best_p1(a.sigma_len());
+        Permutation best_p2(b.sigma_len());
 
-         improved = true
-         while (improved):
-            improved = false
+        unsigned top_dist = min_dist;
+        Permutation top_p1(a.sigma_len());
+        Permutation top_p2(b.sigma_len());
 
-            for (n: m.get_neighbours()):
-                d = distanza_with_n
+        Permutation sigma1_o(a.sigma_len());
+        Permutation sigma2_o(b.sigma_len());
 
-                if (d < min_dist):
-                    min_dist = d
-                    improved = true
+        unsigned attempts = 0;
+        unsigned depth = 0;
+        bool improved = true;
 
-                    best_ms = n
+        while (improved) {
+            improved = false;
 
-            if (improved):
-                m = current_best_ms
-                depth++
-            else:
-                if (min_dist < top_dist):
-                    top_dist = min_dist
-                    top_ms = best_ms
+            for (size_t ip = 0; ip < a.sigma_len(); ip++) {
+                for (size_t jp = ip; jp < a.sigma_len(); jp++) {
 
-                    improved = true
-                    attempts = 0
-                    depth = 0
+                    // here comes the swap for sigma1
+                    std::copy(p1.perm.begin(), p1.perm.end(), sigma1_o.perm.begin());
+                    std::swap(sigma1_o.perm[ip], sigma1_o.perm[jp]);
 
-                if (attempts < max_attempts):
-                    improved = true
-                    attempts++
+                    for (size_t ipp = 0; ipp < b.sigma_len(); ipp++) {
+                        for (size_t jpp = ipp; jpp < b.sigma_len(); jpp++) {
 
-                    m = random_ms(m)
-                    min_dist = distanza_with_m
-                else:
-                    # this is the end
-                    final_ms = top_ms
-                    final_dist = top_dist
+                            std::copy(p2.perm.begin(), p2.perm.end(), sigma2_o.perm.begin());
+                            std::swap(sigma2_o.perm[ipp], sigma2_o.perm[jpp]);
 
-         */
+                            d = this->metric->compute_distance_enhanced(a, b, sigma1_o.perm, sigma2_o.perm);
+                            if (d < min_dist) {
+                                min_dist = d;
+                                improved = true;
 
-        return 0;
+                                std::copy(sigma1_o.perm.begin(), sigma1_o.perm.end(), best_p1.perm.begin());
+                                std::copy(sigma2_o.perm.begin(), sigma2_o.perm.end(), best_p2.perm.begin());
+                            }
+                        }
+
+                        std::copy(p2.perm.begin(), p2.perm.end(), sigma2_o.perm.begin());
+                    }
+                }
+            }
+
+            if (improved) {
+                std::copy(best_p1.perm.begin(), best_p1.perm.end(), sigma1_o.perm.begin());
+                std::copy(best_p2.perm.begin(), best_p2.perm.end(), sigma2_o.perm.begin());
+
+                std::copy(best_p1.perm.begin(), best_p1.perm.end(), p1.perm.begin());
+                std::copy(best_p2.perm.begin(), best_p2.perm.end(), p2.perm.begin());
+
+                depth++;
+            } else {
+                if (min_dist < top_dist) {
+                    top_dist = min_dist;
+
+                    std::copy(best_p1.perm.begin(), best_p1.perm.end(), top_p1.perm.begin());
+                    std::copy(best_p2.perm.begin(), best_p2.perm.end(), top_p2.perm.begin());
+
+                    improved = true;
+                    attempts = 0;
+                    depth = 0;
+                }
+
+                if (attempts < this->MAX_ATTEMPTS) {
+                    improved = true;
+                    attempts++;
+
+                    std::random_shuffle(p1.perm.begin(), p1.perm.end());
+                    std::random_shuffle(p2.perm.begin(), p2.perm.end());
+
+                    std::copy(p1.perm.begin(), p1.perm.end(), sigma1_o.perm.begin());
+                    std::copy(p2.perm.begin(), p2.perm.end(), sigma2_o.perm.begin());
+
+                    min_dist = this->metric->compute_distance_enhanced(a, b, p1.perm, p2.perm);
+                } // an else branch here would be the last step before the termination;
+            }
+        }
+
+        return top_dist;
     };
 };
 
