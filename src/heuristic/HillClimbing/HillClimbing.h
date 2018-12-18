@@ -65,6 +65,8 @@ public:
                                 min_dist = d;
                                 improved = true;
 
+                                std::cout << "found: " << min_dist << std::endl;
+
                                 std::copy(sigma1_o.perm.begin(), sigma1_o.perm.end(), best_p1.perm.begin());
                                 std::copy(sigma2_o.perm.begin(), sigma2_o.perm.end(), best_p2.perm.begin());
                             }
@@ -86,6 +88,8 @@ public:
             } else {
                 if (min_dist < top_dist) {
                     top_dist = min_dist;
+
+                    std::cout << "(top): " << top_dist << std::endl;
 
                     std::copy(best_p1.perm.begin(), best_p1.perm.end(), top_p1.perm.begin());
                     std::copy(best_p2.perm.begin(), best_p2.perm.end(), top_p2.perm.begin());

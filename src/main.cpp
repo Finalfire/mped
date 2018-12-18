@@ -62,6 +62,28 @@ void token_seq() {
     std::cout << e.compute_edit(a, b, m) << std::endl;
 }*/
 
+unsigned exact(const AbstractSequence& a, const AbstractSequence& b) {
+
+    MatchingSchema m(a.sigma_len(), b.sigma_len(), 1, 1, true);
+    EditDistance edit(a.seq_len(), b.seq_len(), &m);
+
+    std::vector<unsigned> sig1(a.sigma_len()), sig2(b.sigma_len());
+    std::iota(sig1.begin(), sig1.end(), 0);
+    std::iota(sig2.begin(), sig2.end(), 0);
+
+    unsigned dist = INT_MAX;
+    unsigned d = dist;
+
+    do {
+        d = edit.compute_distance_enhanced(a, b, sig1, sig2);
+
+        if (d < dist)
+            dist = d;
+    } while(std::next_permutation(sig1.begin(), sig1.end()));
+
+    return dist;
+}
+
 int main(int argc, char** argv) {
     std::ios_base::sync_with_stdio(false);
 
@@ -73,25 +95,27 @@ int main(int argc, char** argv) {
     //SimpleSequence s1("odkoodokogdkdkodgoddokkdkdgkogooddodgkkgkokdoooddg");
     //SimpleSequence s2("ensnmememnssnesnseeesennnmmnmmsneeesnsnnsssememmnm");
 
-    // exact solution: 1610 ( case 14_2000)
+    // ( case 14_2000)
     SimpleSequence s1("bonaankczwzozuuttoozueeagoungnuuawkzxubgcbwkooubkxiaxbkgezocxtocgeoocxbntobexbkbuewgoxutkgezcxtczoggcwtkaikwngwbaeztaecwuokwcwakugtooztxzgxziabwngzbtnizeetnixwexxczibaecobexuozakgegczkngwwxeabtnexazkiinixutzuuakinaocwuwaianuntebeeuaabwogxnoocgewacgggwzaowbtiwzokonncowucwwigonuxwacxegecnitzabiatikunbxibagxniczoatugewenecgkunweegzietwwkzituabzwxbtgattxnwowezxubnowxkgnnwanetgxwnzuowzxineogkioczwacwktieatxtzkbkzxkkbeckoncbwztbiewxxnwixctnxxixiwkkouaubnezgionbabkebxgoeoawcenieiakteckkiazkugxxztoenkgewkawcwowguiuogtiinckitxnzxxtitxtnaueetwwitxawcuuzbkgtaoteockbnuiaczxeoauxeoooccnuxgcxebkkkakiwnngnoiczexnznizwczubeocunktkbzekktwwnooiokgeoxbebkxuoiicnanknntzxbzntckwkeeaeoiuucitgkznaccacgggbecgzuxgteeenbzioztukwwkwbgiabntcxobowgeeogkkwazznxwtiittgoxtukieekktzaaangeiziuxnuzziaxikngewaixgkbanxcgzxznnucbiuoizbagcgzkncnzcczcaeennzetgckioogkgoetankzozubkwtbwogczxiaboatuwtuganuwtactewtetgewbwkuexbbinxknazibkwnibtbkexuggitcicxtogkttgeuogttwitzwnbagcotzizguwixbgzkbawccokouaeuzznwanxzwkueuxnbaeattickncikgzieeztonwwiowtabeoecxnatgkwikweiugzxkcegnezboowotuuebkguouznagnuncwnkzbtezcbntkzzxzuknbzbbxnawbueokzottaunkbxobznbnztnuxboogcogbbcexwtzoiozgubtzbcxwbitkuzwitwauiaeeeoukiubzaxbanbcneeataxabucxegzitgewewxkketxeziknkwuuwoexxxnxezkiozwgzbbzwzxocxuoticnbuxbnctitozttaaktugitxagoizobibaoxoatxixkxeatnweabcwxbiewkwbnucaneiciuoaxukgcowtcnioeueekwubacnxawexizabgcbtnkneaboxauegbkonexawxoexewceeitoewazzecicknotxnkcbnzzatcgnkbezgacxixwabwgckexcbkoeeeuwouwbcibuzbniwizobuoibbbactookagagwntcnwwwangkbboubkugcoebbkguwaazcbxugeeetbnxkxaeguctkibxugicbxbknwuactxoncbixekuecggakciowcacoutnkwkwiiweektggtbwaxtebzkzainxkentztxkxinnkacwbenbgunniaugkexgnaixcenbokezkuxtgxxcegxixuwkaoaxtxiiboocaxoztwnbbtxooikoatoxxiuiunukbizttukkibckwzaaiobioookktuikeeiiicknkgicuxccwxgaaxbneenngzxabtxtwgaeuizaugzwttwiztewebueneakokguauiuibowggcotwgwauiitntxbbkzkgtgwxtxizztcgnkkcezaaueawnnxxczbgwcbekkwggzzibbzezuguuwwwwoageowtgttuttkcbcxgczaabzncowitiiizgwnaekzexgouwaxbickukxwowouxzxgtxbxkineakwogzbgxcegotncetgwczokobxnwkgwczinzwin");
     SimpleSequence s2("uxhyyrjxiayrihrilxxhdvaymzyaduyfryfjfvddflxijryzmuzzalfuuiyhvifyhvdauiljyflmylixfxruavadvlzihfzmlyfxfhxaluaxrvirdrijmhyjffymvlvdxuxayafiidvmyiiavjulxuliyajidzzjhlhrazvfrrjrjzmjxajrljmiixflzauxazuyaajzadaavfjlzyjavjrvrhahmxilzyhlalyvmdvvuzhlrziamxlyduiyzlyixdfyrjvivizaxijfhyvyihviafizlyirahfrdaiihihzamffjrjfarirhfaayxyfyrahulmjfjjuymrvhvhalhrddyuuulvuvjamuaizlydahljvifijvlvimfvduyfvdyfldaizrhvdhhhzxxvuraziizjhyzrdjvlidlivhddxrmuaxrfvxujyrfvzvzuzuvhmialazdifmlduvdafxalfvuifruxjzzrvjuulmhrldmjxrhifumhyajvmdahhjmadhfyaxfaldxudhxmhuyfafllxxazlddvdamvjiyxhdaufmjdlyijjlafajjxarlrmajauzrfdmdhuxyijfriradjxvxyxihdjdhhfldxrumhmdylvilzmlmfvhavjljvhjdzdrdhfjdujydmdxyvlrfymmmlihfzxyjlfuduhruzuadfidudrrljvhxzfdumauzyfdaizallfariaxzrfljidlrxvhvrymyivamhfjjfmuihujihmdvvxavilzjjdxmuldxvhyayurufdldulmizzhdxdfvjhdfizhhxfddjaaydfhadyxzrjimzydyjhdrxdvjyuafhzyyffhuamuluuifzajhulhvliayhuauyllidzzyvrfjrzffradjxxymfzdayixdijxzdummhyhvhfviavhzuyhfxxizuyhmzuuuxmaimhmfafdfiryjazxmldjlrjdavjjddmmrrxvyhzjvrdyiiizaivlalimrujzjrzxyumyvfrlduxfumdjhjfafrvylrxzxhimjjhymrmiujyahzhhrzhzlhxamhuzhrdizidvaviihyhfymvlixulyijhlfrdmivjxziidavffiavzyvmihmrdivmlxmfifiairvhdiyujmluyzufajfvluhyiylzjlrrjdduurdzzlrryxfxyxljxxydaxrafhjfzrllmaujaifjymyrrmullrxhuzrmyfamimrmjrlzrrvyrdvzfrmmalvvyymajdiumdiajdjardazhxzlzrdjijijxayrzzyixhfizmvryxjujmavjrlzlajiydudvruhfihazuaxmuyadxujifrmddllvvivmjhyhmrdfduyvmiujvrrxydxjrlairzzjlfxxvfldvddjdaavvhmdzdulvzzlazdaxjulvvyflrlziravmdyllyvxmarhhyuamifyhudaizlildiryjzfaulrdlzazmmymijlfxurdxxjdlffxxamdizffhmlrxyyzivvayvyulzxmijjmdvyvdhdxxzaammaxxujymrifahllumarayazxavvzlfrffyaavdifuxijhrlmfydxxdziuyamyxrrhiujdiafudzfrduavrrllyivmvzjhjjiruadrairduaduyhdijulamljxdhaxdjzdjhxhamjimrmvvjhfhyhxujvxluixaljduldmmijmulflaudauvmaxxrxauumuvvhrajauhuxihrizaaaymjdaayvyadvaijhahhxamdfdjujmrafdlfddalduivzxyifuxilmzxjdjfyzxfxymuhyxljdrruhzrzfxdfxdlrmhryjjixflajmhjflzlrvduzvmazfifhuylfydljarmfzhifavhjvxzidxmymdmulmvxruudamufdrlihzdmrdlvfvyyxfuuhfhzfjhxyazryiiyaduxaifzrryzzixdliuluhvdmzyliymaxdahfvj");
 
-    MatchingSchema* m = new MatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2, true);
+    std::cout << exact(s1, s2) << std::endl;
+
+    /*MatchingSchema* m = new MatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2, true);
     EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len(), m);
 
     unsigned maxgen=120, mu=30, lambda=120;
-    EvolutionStrategy<Swap2_E>* h_es = new EvolutionStrategy<Swap2_E>(metric, maxgen, mu, lambda);
+    //EvolutionStrategy<Swap2>* h_es = new EvolutionStrategy<Swap2>(metric, maxgen, mu, lambda);
     HillClimbing* h_hc = new HillClimbing(metric);
 
-    MPED mped(s1, s2, p1, p2, metric, h_es);
+    MPED mped(s1, s2, p1, p2, metric, h_hc);
 
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
-    mped.setHeuristic(h_hc);
-    std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
+    //mped.setHeuristic(h_hc);
+    //std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
 
     delete metric;
-    delete m;
+    delete m;*/
 
     return 0;
 }
