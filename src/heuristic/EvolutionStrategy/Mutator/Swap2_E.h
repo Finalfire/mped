@@ -5,17 +5,17 @@
 #ifndef MPED_SWAP2_E_H
 #define MPED_SWAP2_E_H
 
-#include "Individual.h"
+#include "Mutator.h"
 
 static unsigned* blocksig1 = NULL;
 static unsigned* blocksig2 = NULL;
 
-class Swap2_E: public Individual{
+class Swap2_E: public Mutator{
 
 public:
 
-    explicit Swap2_E(Individual::optimization opt):Individual(opt){};
-    explicit Swap2_E(Individual::optimization opt, const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2): Individual(opt, sig1, sig2){}
+    //explicit Swap2_E(Individual::optimization opt):Individual(opt){};
+    //explicit Swap2_E(Individual::optimization opt, const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2): Individual(opt, sig1, sig2){}
 
     static void initializeBlocksSwap2E(const std::vector<unsigned>& sig, const size_t& p, const size_t& positionBlock)
     {
@@ -37,8 +37,11 @@ public:
         }
     }
 
-    void mutate()
+    void mutate(Individual& individual)
     {
+        unsigned sigma1l = individual.getSigma1l();
+        unsigned sigma2l = individual.getSigma2l();
+
         //Perform a single, simple swap of two indices for every vector
 
         //first vector
@@ -54,9 +57,9 @@ public:
             }
         }
 
-        unsigned temp = sigma1[index_1];
-        sigma1[index_1] = sigma1[index_2];
-        sigma1[index_2] = temp;
+        unsigned temp = individual.getSigma1()[index_1];
+        individual.getSigma1()[index_1] = individual.getSigma1()[index_2];
+        individual.getSigma1()[index_2] = temp;
 
         //second vector
         index_1 = rand() % sigma2l;
@@ -71,9 +74,9 @@ public:
             }
         }
 
-        temp = sigma2[index_1];
-        sigma2[index_1] = sigma2[index_2];
-        sigma2[index_2] = temp;
+        temp = individual.getSigma2()[index_1];
+        individual.getSigma2()[index_1] = individual.getSigma2()[index_2];
+        individual.getSigma2()[index_2] = temp;
 
     }
 

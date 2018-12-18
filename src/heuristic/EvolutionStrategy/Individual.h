@@ -5,11 +5,11 @@
 #ifndef MPED_INDIVIDUAL_H
 #define MPED_INDIVIDUAL_H
 
-#include "../EvolutionStrategy.h"
+#include "EvolutionStrategy.h"
 
 class Individual
 {
-protected:
+private:
     std::vector<unsigned> sigma1;
     std::vector<unsigned> sigma2;
     unsigned sigma1l;
@@ -36,7 +36,7 @@ public:
         costValue = opt;
     }
 
-    virtual void mutate(){};
+    /** getter & setter **/
 
     void setCostValue(unsigned c){
         costValue = c;
@@ -46,13 +46,23 @@ public:
         return costValue;
     }
 
-    const std::vector<unsigned>& getSigma1() const {
+     std::vector<unsigned>& getSigma1() {
         return sigma1;
     }
 
-    const std::vector<unsigned>& getSigma2() const {
+     std::vector<unsigned>& getSigma2() {
         return sigma2;
     }
+
+    unsigned getSigma1l() const {
+        return sigma1l;
+    }
+
+    unsigned getSigma2l() const {
+        return sigma2l;
+    }
+
+    /** end - getter & setter **/
 
     bool operator<(const Individual& m) const
     {

@@ -15,26 +15,28 @@
 #include <string>
 #include <type_traits>
 
-#include "Heuristic.h"
-#include "individual/Individual.h"
-#include "individual/Swap2_E.h"
+#include "../Heuristic.h"
+#include "Individual.h"
+#include "Mutator/Mutator.h"
+#include "Mutator/Swap2_E.h"
 
 
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC / 1000)
 
 //Template that represents the kind of individual to instantiate
-template <class I>
+template <class T>
 class EvolutionStrategy: public Heuristic {
 protected:
 	const size_t max_generations;
 	const size_t mu;
 	const size_t lambda;
+	Mutator* mutator;
 
 private:
 	/// <summary>To generate MU random individuals (to initialize the pool of parents from initial parent)
-	void GenerateParents(const AbstractSequence& a1, const AbstractSequence& a2, std::vector<I>& parents, I firstIndividual){
+	void GenerateParents(const AbstractSequence& a1, const AbstractSequence& a2, std::vector<Individual>& parents, Individual firstIndividual){
 		for (size_t i = 1; i < mu; i++){
-			firstIndividual.mutate();
+			mutator->mutate(firstIndividual);
 			firstIndividual.setCostValue(metric->compute_distance_enhanced(a1, a2, firstIndividual.getSigma1(), firstIndividual.getSigma2())); // TODO compute enhanced
 
 			parents[i]=firstIndividual;
@@ -53,7 +55,7 @@ private:
 	}
 
 	/// <summary>To select the worst parent cost value within pool parents
-	unsigned getWorstParentCostValue(std::vector<I>& parents, bool minimize){
+	unsigned getWorstParentCostValue(std::vector<Individual>& parents, bool minimize){
 		unsigned worstParentCostValue = parents[0].getCostValue();
 
 		if (minimize) {
@@ -77,7 +79,9 @@ private:
 
 public:
 
-	EvolutionStrategy(Metric* m, const size_t& max_gen, const size_t& mu, const size_t& lambda) : Heuristic(m), max_generations(max_gen), mu(mu), lambda(lambda){};
+	EvolutionStrategy(Metric* m, const size_t& max_gen, const size_t& mu, const size_t& lambda):Heuristic(m), max_generations(max_gen), mu(mu), lambda(lambda){
+		mutator = new T();
+	};
 	~EvolutionStrategy(){}
 
 	unsigned compute_heuristic(const AbstractSequence& a1, const AbstractSequence& a2) {
@@ -89,7 +93,7 @@ public:
 
 
 		//Check if the individual are Swap2-E, so that we initialize stuff for the mutuator (swap2 specific for Edit Distance)
-		if (std::is_same<I, Swap2_E>::value){
+		if (std::is_same<T, Swap2_E>::value){
 			Swap2_E::initializeBlocksSwap2E(sig1, matchingSchema->p1, 1);
 			Swap2_E::initializeBlocksSwap2E(sig2, matchingSchema->p2, 2);
 		}
@@ -98,11 +102,11 @@ public:
 		//const unsigned *const blocksig1 = initializeBlocksSwap2E(sig1, p1);
 		//const unsigned *const blocksig2 = initializeBlocksSwap2E(sig2, p2);
 
-		I firstIndividual(I::optimization::minimize, sig1, sig2);
-		I bestIndividual(I::optimization::minimize);
+		Individual firstIndividual(Individual::optimization::minimize, sig1, sig2);
+		Individual bestIndividual(Individual::optimization::minimize);
 
 		//Generate mu random individuals
-		std::vector<I> parents(mu+lambda, I(I::optimization::minimize));
+		std::vector<Individual> parents(mu+lambda, Individual(Individual::optimization::minimize));
 		parents[0] = firstIndividual;
 		GenerateParents(a1, a2, parents, firstIndividual);
 
@@ -121,10 +125,10 @@ public:
 				const unsigned p = rand() % mu;
 
 				//Create a new child from a random parent chosen from pool parents
-				I child = parents[p];
+				Individual child = parents[p];
 
 				//Mutate child
-				child.mutate();
+				mutator->mutate(child);
 				//child.swap2_enhanced(blocksig1, blocksig2);
 
 				//Compute edit distance on this child sigma permutation, and update cost value of child
