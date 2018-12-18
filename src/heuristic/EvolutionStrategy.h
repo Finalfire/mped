@@ -77,7 +77,7 @@ private:
 
 public:
 
-	EvolutionStrategy(Metric* m, const size_t& max_gen, const size_t& mu, const size_t& lambda):Heuristic(m), max_generations(max_gen), mu(mu), lambda(lambda){};
+	EvolutionStrategy(Metric* m, const size_t& max_gen, const size_t& mu, const size_t& lambda) : Heuristic(m), max_generations(max_gen), mu(mu), lambda(lambda){};
 	~EvolutionStrategy(){}
 
 	unsigned compute_heuristic(const AbstractSequence& a1, const AbstractSequence& a2) {

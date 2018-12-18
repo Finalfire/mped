@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     EvolutionStrategy<Shuffle> h_es(metric, 120, 30, 120);
     HillClimbing h_hc(metric);
 
-    MPED mped(s1, s2, p1, p2, metric, h_es);
+    MPED mped(s1, s2, p1, p2, metric, h_hc);
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
     mped.setHeuristic(h_hc);
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
