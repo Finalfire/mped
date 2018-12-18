@@ -25,12 +25,12 @@ protected:
     AbstractSequence s1;
     AbstractSequence s2;
     Metric* metric;
-    Heuristic& heuristic;
+    Heuristic* heuristic;
     MatchingSchema* matchingSchema;
 
 public:
 
-    explicit MPED(const AbstractSequence& s1, const AbstractSequence& s2, const size_t p1, const size_t p2, Metric* m, Heuristic& h):s1(s1), s2(s2), metric(m), heuristic(h){
+    explicit MPED(const AbstractSequence& s1, const AbstractSequence& s2, const size_t p1, const size_t p2, Metric* m, Heuristic* h):s1(s1), s2(s2), metric(m), heuristic(h){
         initMatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2);
     }
 
@@ -47,7 +47,7 @@ public:
         initMatchingSchema(s1.sigma_len(), s2.sigma_len(), 1, 1);
     }
 
-    void setHeuristic(const Heuristic& h) {
+    void setHeuristic(Heuristic* h) {
         this->heuristic = h;
     }
 
@@ -56,7 +56,7 @@ public:
     }
 
     unsigned compute_edit_heuristic(){
-        return heuristic.compute_heuristic(s1, s2);
+        return heuristic->compute_heuristic(s1, s2);
     }
 };
 

@@ -7,17 +7,18 @@
 #include "sequence/SimpleSequence.h"
 
 #include "metric/EditDistance.h"
-#include "heuristic/EvolutionStrategy.h"
+#include "heuristic/EvolutionStrategy/EvolutionStrategy.h"
 #include "metric/Jaro.h"
 
 #include "MPED.h"
-#include "heuristic/individual/Shuffle.h"
-#include "heuristic/individual/Swap2.h"
-#include "heuristic/individual/Swap3.h"
-#include "heuristic/individual/Scramble.h"
-#include "heuristic/individual/Inversion.h"
-#include "heuristic/individual/Translocation.h"
-#include "heuristic/individual/Swap2_Swap3.h"
+#include "heuristic/EvolutionStrategy/Mutator/Shuffle.h"
+#include "heuristic/EvolutionStrategy/Mutator/Inversion.h"
+#include "heuristic/EvolutionStrategy/Mutator/Scramble.h"
+#include "heuristic/EvolutionStrategy/Mutator/Swap2.h"
+#include "heuristic/EvolutionStrategy/Mutator/Swap2_E.h"
+#include "heuristic/EvolutionStrategy/Mutator/Swap2_Swap3.h"
+#include "heuristic/EvolutionStrategy/Mutator/Swap3.h"
+#include "heuristic/EvolutionStrategy/Mutator/Translocation.h"
 
 #include "heuristic/HillClimbing/HillClimbing.h"
 
@@ -75,10 +76,12 @@ int main(int argc, char** argv) {
     MatchingSchema* m = new MatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2, true);
     EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len(), m);
 
-    EvolutionStrategy<Shuffle> h_es(metric, 120, 30, 120);
-    HillClimbing h_hc(metric);
+    unsigned maxgen=120, mu=30, lambda=120;
+    EvolutionStrategy<Shuffle>* h_es = new EvolutionStrategy<Shuffle>(metric, maxgen, mu, lambda);
+    HillClimbing* h_hc = new HillClimbing(metric);
 
     MPED mped(s1, s2, p1, p2, metric, h_es);
+
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
     mped.setHeuristic(h_hc);
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
