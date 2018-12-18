@@ -103,10 +103,10 @@ int main(int argc, char** argv) {
     EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len(), m);
 
     unsigned maxgen=120, mu=30, lambda=120;
-    //EvolutionStrategy<Swap2>* h_es = new EvolutionStrategy<Swap2>(metric, maxgen, mu, lambda);
-    HillClimbing* h_hc = new HillClimbing(metric);
+    EvolutionStrategy<Swap2>* h_es = new EvolutionStrategy<Swap2>(metric, maxgen, mu, lambda);
+    //HillClimbing* h_hc = new HillClimbing(metric);
 
-    MPED mped(s1, s2, p1, p2, metric, h_hc);
+    MPED mped(s1, s2, p1, p2, metric, h_es);
 
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
     //mped.setHeuristic(h_hc);

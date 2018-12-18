@@ -68,6 +68,34 @@ public:
     {
         return this->getCostValue() < m.getCostValue();
     }
+
+    bool operator==(const Individual& m) const
+    {
+        if (costValue != m.costValue || sigma1l != m.sigma1l
+            || sigma2l != m.sigma2l)
+        {
+            return false;
+        }
+
+        for (unsigned i = 0; i < sigma1l; ++i)
+        {
+            if (sigma1[i] != m.sigma1[i])
+            {
+                return false;
+            }
+        }
+
+        for (unsigned i = 0; i < sigma2l; ++i)
+        {
+            if (sigma2[i] != m.sigma2[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /*
 
     ES_MatchingSchema(const ES_MatchingSchema& m) :
@@ -132,33 +160,6 @@ public:
         }
         std::copy(m.sigma2, m.sigma2 + sigma2l, sigma2);
         return *this;
-    }
-
-    bool operator==(const ES_MatchingSchema& m) const
-    {
-        if (costValue != m.costValue || sigma1l != m.sigma1l
-            || sigma2l != m.sigma2l)
-        {
-            return false;
-        }
-
-        for (unsigned i = 0; i < sigma1l; ++i)
-        {
-            if (sigma1[i] != m.sigma1[i])
-            {
-                return false;
-            }
-        }
-
-        for (unsigned i = 0; i < sigma2l; ++i)
-        {
-            if (sigma2[i] != m.sigma2[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     ~ES_MatchingSchema()

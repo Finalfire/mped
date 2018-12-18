@@ -97,10 +97,6 @@ public:
 			Swap2_E::initializeBlocksSwap2E(sig1, matchingSchema->p1, 1);
 			Swap2_E::initializeBlocksSwap2E(sig2, matchingSchema->p2, 2);
 		}
-		// TODO vedere che fa sto swap2-E (soprattutto p1 e p2)
-		//Initialize stuff for the mutator swap2-E
-		//const unsigned *const blocksig1 = initializeBlocksSwap2E(sig1, p1);
-		//const unsigned *const blocksig2 = initializeBlocksSwap2E(sig2, p2);
 
 		Individual firstIndividual(Individual::optimization::minimize, sig1, sig2);
 		Individual bestIndividual(Individual::optimization::minimize);
@@ -154,11 +150,12 @@ public:
 
 			//sorting for selecting the best mu individuals and at the same time get the worst parent
 			std::sort(parents.begin(), parents.end());
+
 			// PRINT POOL PARENTS
-			/*std::cout<<"List of Parents:"<<std::endl;
+			std::cout<<"List of Parents:"<<std::endl;
 			for (size_t k = 0; k < parents.size(); k++){
 				std::cout<<parents[k].getCostValue() << " ";
-			}*/
+			}
 
 			worstParentCostValue = parents[mu + childrenInPool].getCostValue();
 
