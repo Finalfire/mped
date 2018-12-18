@@ -160,7 +160,7 @@ public:
 			worstParentCostValue = parents[mu + childrenInPool].getCostValue();
 
 			//Make a random_shuffle for keeping high entropy
-			std::random_shuffle(parents.begin(), parents.end());
+			std::random_shuffle(parents.begin(), parents.begin() + mu);
 
 			generation++;
 		}
