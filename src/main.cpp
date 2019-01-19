@@ -8,6 +8,7 @@
 
 #include "metric/EditDistance.h"
 #include "heuristic/EvolutionStrategy/EvolutionStrategy.h"
+#include "heuristic/EvolutionStrategy/EvolutionStrategyThread2.h"
 #include "metric/Jaro.h"
 
 #include "MPED.h"
@@ -102,15 +103,24 @@ int main(int argc, char** argv) {
     MatchingSchema* m = new MatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2, true);
     EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len(), m);
 
-    unsigned maxgen=120, mu=30, lambda=120;
+    unsigned maxgen=120, mu=30, lambda=139;
     EvolutionStrategy<Swap2_E>* h_es = new EvolutionStrategy<Swap2_E>(metric, maxgen, mu, lambda);
+    EvolutionStrategyThread2<Swap2_E>* h_es_thread = new EvolutionStrategyThread2<Swap2_E>(metric, maxgen, mu, lambda);
     //HillClimbing* h_hc = new HillClimbing(metric);
 
-    MPED mped(s1, s2, p1, p2, metric, h_es);
+    MPED mped(s1, s2, p1, p2, metric, h_es_thread);
 
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
+    //mped.setHeuristic(h_es);
+    //std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
     //mped.setHeuristic(h_hc);
     //std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
+
+    /*std::vector<unsigned> v1 = {2, 4, 5, 7, 1, 9, 3, 0, 8, 6};
+    std::vector<unsigned> v2 = {8, 4, 6, 2, 5, 9, 1, 3, 7, 0 };
+
+    EditDistance eFra(500, 500, m);
+    std::cout<<"CI "<<eFra.compute_distance_enhanced(s1, s2, v1, v2)<<std::endl;*/
 
     delete metric;
     delete m;

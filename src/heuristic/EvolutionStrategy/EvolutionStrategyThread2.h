@@ -1,9 +1,9 @@
 //
-// Created by lucacinelli on 04/12/2018.
+// Created by lucac on 21/12/2018.
 //
 
-#ifndef EVOLUTIONSTRATEGY_H
-#define EVOLUTIONSTRATEGY_H
+#ifndef MPED_EVOLUTIONSTRATEGYTHREAD2_H
+#define MPED_EVOLUTIONSTRATEGYTHREAD2_H
 
 #include <iostream>
 #include <vector>
@@ -14,6 +14,8 @@
 #include <queue>
 #include <string>
 #include <type_traits>
+#include <thread>
+#include <functional>
 
 #include "../Heuristic.h"
 #include "Individual.h"
@@ -25,7 +27,7 @@
 
 //Template that represents the kind of individual to instantiate
 template <class T>
-class EvolutionStrategy: public Heuristic {
+class EvolutionStrategyThread2: public Heuristic {
 protected:
 	const size_t max_generations;
 	const size_t mu;
@@ -79,10 +81,37 @@ private:
 
 public:
 
-	EvolutionStrategy(Metric* m, const size_t& max_gen, const size_t& mu, const size_t& lambda):Heuristic(m), max_generations(max_gen), mu(mu), lambda(lambda){
+	EvolutionStrategyThread2(Metric* m, const size_t& max_gen, const size_t& mu, const size_t& lambda):Heuristic(m), max_generations(max_gen), mu(mu), lambda(lambda){
 		mutator = new T();
 	};
-	~EvolutionStrategy(){}
+	~EvolutionStrategyThread2(){}
+
+
+    /** to compute the children assigned to one thread. Each thread will compute the exacly number of children assigned to it. **/
+    void computeIntervalChildren(size_t lim_inf, size_t lim_sup, Metric* metr, std::vector<Individual> parents, const AbstractSequence& a1, const AbstractSequence& a2){
+
+        //Generate lambda children. Only mutation, no recombination
+        for (unsigned i = lim_inf; i < lim_sup; i++) {
+            //Choose random parent
+            const unsigned p = rand() % mu;
+
+            //Create a new child from a random parent chosen from pool parents
+            Individual child = parents[p];
+
+            //Mutate child
+            mutator->mutate(child);
+
+            //Compute edit distance on this child sigma permutation, and update cost value of child
+            const unsigned distanceChild = metr->compute_distance_enhanced(a1, a2, child.getSigma1(), child.getSigma2());
+
+            // TODO check if the parents is better than the worst parent
+            //The child is better than the worst parent,
+            child.setCostValue(distanceChild);
+
+            parents[mu + i] = child;
+        }
+    }
+
 
 	unsigned compute_heuristic(const AbstractSequence& a1, const AbstractSequence& a2) {
 		std::vector<unsigned> s1 = a1.getSequence_repr(), s2 = a2.getSequence_repr();
@@ -90,6 +119,18 @@ public:
 		std::vector<unsigned> sig1 = a1.getSigma_repr(), sig2 = a2.getSigma_repr();
 		size_t sigLen1 = sig1.size(), sigLen2 = sig2.size();
 		MatchingSchema* matchingSchema = metric->getMatchingSchema();
+
+		// to compute how much thread i need to instantiate ( the logic processors presents on the machine)
+		unsigned int numberOfThreads = std::thread::hardware_concurrency();
+
+		// to compute how much children are assigned to each thread
+		unsigned int childrenPerThread = lambda / numberOfThreads;
+		unsigned int remainderChildrenPerThread = lambda % numberOfThreads;
+		if (remainderChildrenPerThread > 0)
+		    numberOfThreads = numberOfThreads + 1;
+
+		// instantiate the threads that will be used!
+		std::vector<std::thread> threads(numberOfThreads);
 
 
 		//Check if the individual are Swap2-E, so that we initialize stuff for the mutuator (swap2 specific for Edit Distance)
@@ -115,47 +156,27 @@ public:
 		while (generation <= max_generations) {
 			unsigned childrenInPool = 0;
 
-			//Generate lambda children. Only mutation, no recombination
-			for (unsigned i = 0; i < lambda; i++) {
-				//Choose random parent
-				const unsigned p = rand() % mu;
+			for (size_t i = 0; i < numberOfThreads; i++){
+			    unsigned int lim_inf = childrenPerThread * i;
+			    unsigned int lim_sup = (childrenPerThread * (i+1))-1;
 
-				//Create a new child from a random parent chosen from pool parents
-				Individual child = parents[p];
+                threads[i] = std::thread(&EvolutionStrategyThread2::computeIntervalChildren, this, lim_inf, lim_sup, metric, parents, a1, a2);
+                //threads[i] = std::thread(&EvolutionStrategyThread2::p, this, lim_inf, lim_sup, metric, parents);
+			}
 
-				//Mutate child
-				mutator->mutate(child);
-				//child.swap2_enhanced(blocksig1, blocksig2);
-
-				//Compute edit distance on this child sigma permutation, and update cost value of child
-				const unsigned distanceChild = metric->compute_distance_enhanced(a1, a2, child.getSigma1(), child.getSigma2());
-
-				// TODO inserire la mia con la distanza.
-				/*const int newDistance =
-						e.edit_distance_matching_schema_enhanced_with_diagonal(s1,
-																			   s2, s1l, s2l, child.sigma1, child.sigma2,
-																			   sig1l,
-																			   sig2l, m, worstParentCostValue);*/
-
-				if (distanceChild != -1) {
-
-					// TODO check if the parents is better than the worst parent
-					//The child is better than the worst parent,
-					child.setCostValue(distanceChild);
-
-					parents[mu + childrenInPool] = child;
-					childrenInPool++;
-				}
+			// main thread will wait that all thread finish before go ahead.
+			for (unsigned i = 0; i < numberOfThreads; i++){
+			    threads[i].join();
 			}
 
 			//sorting for selecting the best mu individuals and at the same time get the worst parent
 			std::sort(parents.begin(), parents.end());
 
 			// PRINT POOL PARENTS
-			/*std::cout<<"List of Parents:"<<std::endl;
+			std::cout<<"List of Parents:"<<std::endl;
 			for (size_t k = 0; k < parents.size(); k++){
 				std::cout<<parents[k].getCostValue() << " ";
-			}*/
+			}
 
 			worstParentCostValue = parents[mu + childrenInPool].getCostValue();
 
@@ -175,4 +196,4 @@ public:
 
 };
 
-#endif //EVOLUTIONSTRATEGY_H
+#endif //MPED_EVOLUTIONSTRATEGYTHREAD2_H
