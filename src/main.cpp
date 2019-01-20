@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
     //SimpleSequence s1("odkoodokogdkdkodgoddokkdkdgkogooddodgkkgkokdoooddg");
     //SimpleSequence s2("ensnmememnssnesnseeesennnmmnmmsneeesnsnnsssememmnm");
 
-    // ( case 14_2000)
+    // ( case 10_500) ex solution => 353
     SimpleSequence s1("kkkpauiupdoippuqdfippokziopodfzakuukfououzkudaokkqaafiuzpzfkkfozqzopaqppaoppqfuaqpauppiozifkzpikukpaqqiauzkpkzdkoukoqpkuoduuddafzupqfiqdaqadooizkpouuafkzapokpdoqkpuqfakaakfupudquqpdkdzduapizddoakdifkqqkaquqdooiiuqpouqqfqzffofupdpffzkipfiiofkdupdzdqudoqfipakqdfpoqfpziqakpqdqkipuiukzpoioudpppddudoiqppopqokkfikfpakozfuufiduuouqquzkdpodqdaizpozfoqfkziouzfqokpfaqopfiuiqaiozziffpdpffudoqkfappzkouakkikqpozuzpdqupkozfkakikqfiiiuofoaoaqkfqifpffiudaiakipfpiuuipoiikfouquaqzupidaauozzoazufzduifpuoadfuqpzziz");
     SimpleSequence s2("rkkrartayatrdlylygykjtkjrlarrjtkdddyyrydjyyrdkgzjklazdzydykkazgargallkdlrzkklrdtaddyyltkajlatatlktdkdjddtjaddlyrdzldkyrrrjrkzzdjdrydjrrjgztyrjjrjalgazgjtjyyztrrrayljggkjggtrzkltdztgyaalztaydaatzrzallylkktjdrlljadltdkgjdtlyjgjzddljlgytzlyyldtyyjjazzdydddlatllrzykggztydkyzkrgykzdtkatrktgdarazgddydrjdgtzagykryjrrgdkdzzdjrtzrktdytzltrlkgatdaaggygjlzdygtkrjgyjyakggjkzakyalaldgtjakjggzajljrkdkgkryygglggdlddzrtdkdtyggjddryzyrytayrdrlrzrazallylyadkkldltlklzdttydjjkgzgtggajkaatadjadjlzjzygyalaggykyjgagal");
 
@@ -111,8 +111,8 @@ int main(int argc, char** argv) {
     MPED mped(s1, s2, p1, p2, metric, h_es_thread);
 
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
-    //mped.setHeuristic(h_es);
-    //std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
+    mped.setHeuristic(h_es);
+    std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
     //mped.setHeuristic(h_hc);
     //std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
 

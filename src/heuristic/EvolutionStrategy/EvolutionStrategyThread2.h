@@ -88,7 +88,7 @@ public:
 
 
     /** to compute the children assigned to one thread. Each thread will compute the exacly number of children assigned to it. **/
-    void computeIntervalChildren(size_t lim_inf, size_t lim_sup, Metric* metr, std::vector<Individual> parents, const AbstractSequence& a1, const AbstractSequence& a2){
+    void computeIntervalChildren(size_t lim_inf, size_t lim_sup, Metric* metr, std::vector<Individual>& parents, const AbstractSequence& a1, const AbstractSequence& a2){
 
         //Generate lambda children. Only mutation, no recombination
         for (unsigned i = lim_inf; i < lim_sup; i++) {
@@ -158,10 +158,13 @@ public:
 
 			for (size_t i = 0; i < numberOfThreads; i++){
 			    unsigned int lim_inf = childrenPerThread * i;
-			    unsigned int lim_sup = (childrenPerThread * (i+1))-1;
+			    unsigned int lim_sup = childrenPerThread * (i+1);
 
-                threads[i] = std::thread(&EvolutionStrategyThread2::computeIntervalChildren, this, lim_inf, lim_sup, metric, parents, a1, a2);
-                //threads[i] = std::thread(&EvolutionStrategyThread2::p, this, lim_inf, lim_sup, metric, parents);
+			    if (remainderChildrenPerThread > 0 && i == (numberOfThreads-1))
+			    	lim_sup = lim_inf + remainderChildrenPerThread;
+
+			    //std::cout<<"lim_inf "<<lim_inf<<" "<<"lim_sup"<<lim_sup<<std::endl;
+                threads[i] = std::thread(&EvolutionStrategyThread2::computeIntervalChildren, this, lim_inf, lim_sup, metric, std::ref(parents), a1, a2);
 			}
 
 			// main thread will wait that all thread finish before go ahead.
@@ -173,10 +176,11 @@ public:
 			std::sort(parents.begin(), parents.end());
 
 			// PRINT POOL PARENTS
-			std::cout<<"List of Parents:"<<std::endl;
+			/*std::cout<<"List of Parents:"<<std::endl;
 			for (size_t k = 0; k < parents.size(); k++){
 				std::cout<<parents[k].getCostValue() << " ";
 			}
+			std::cout<<std::endl;*/
 
 			worstParentCostValue = parents[mu + childrenInPool].getCostValue();
 
