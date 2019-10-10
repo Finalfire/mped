@@ -19,6 +19,7 @@ class HillClimbing : public Heuristic {
 private:
 
     const unsigned MAX_ATTEMPTS = 1;
+    unsigned count_file = 0;
 
 public:
 
@@ -60,12 +61,27 @@ public:
                             std::copy(p2.perm.begin(), p2.perm.end(), sigma2_o.perm.begin());
                             std::swap(sigma2_o.perm[ipp], sigma2_o.perm[jpp]);
 
-                            d = this->metric->compute_distance_enhanced(a, b, sigma1_o.perm, sigma2_o.perm);
+                            if (this->metric->isDiagonalOptimization())
+                                d = this->metric->compute_distance_enhanced_with_diagonal(a, b, sigma1_o.perm, sigma2_o.perm, this->metric->getThreshold());
+                            else
+                                d = this->metric->compute_distance_enhanced(a, b, sigma1_o.perm, sigma2_o.perm);
+
+                            // PROVA LUCA
+
+                            /*if (d == 29)
+                                std::cout<<std::endl<<"ottima é : "<<count_file<<std::endl;
+                            saveToFile_matrix();
+
+                            count_file++;*/
+
+                            // END PROVA LUCA
+
+
                             if (d < min_dist) {
                                 min_dist = d;
                                 improved = true;
 
-                                std::cout << "found: " << min_dist << std::endl;
+                                //std::cout << "found: " << min_dist << std::endl;
 
                                 std::copy(sigma1_o.perm.begin(), sigma1_o.perm.end(), best_p1.perm.begin());
                                 std::copy(sigma2_o.perm.begin(), sigma2_o.perm.end(), best_p2.perm.begin());
@@ -89,7 +105,7 @@ public:
                 if (min_dist < top_dist) {
                     top_dist = min_dist;
 
-                    std::cout << "(top): " << top_dist << std::endl;
+                    //std::cout << "(top): " << top_dist << std::endl;
 
                     std::copy(best_p1.perm.begin(), best_p1.perm.end(), top_p1.perm.begin());
                     std::copy(best_p2.perm.begin(), best_p2.perm.end(), top_p2.perm.begin());
@@ -116,6 +132,31 @@ public:
 
         return top_dist;
     };
+
+    // utility function to save in file
+    void saveToFile_matrix(){
+        std::fstream outfile;
+        std::string file_name = "export_files_hc_10_50/example_" + std::to_string(count_file) + ".txt";
+        outfile.open(file_name, std::ios::out);
+
+        EditDistance* e_metric = dynamic_cast<EditDistance*>(metric);
+        for (size_t i = 0; i < e_metric->getN(); i++) {
+            for (size_t j = 0; j < e_metric->getM(); j++) {
+                Matrix<unsigned> *matrix_2 = e_metric->getMatrix();
+                //std::cout << (*matrix_2)(i, j) << std::endl;
+                outfile << (*matrix_2)(i, j) << ",";
+            }
+            outfile << "\n";
+        }
+
+        // stampare l'ottima
+        //if (((*(e_metric -> getMatrix()))(e_metric->getN(), e_metric->getM())) == 24)
+        //   std::cout<< count_file << std::endl;
+
+        outfile.close();
+
+
+    }
 };
 
 

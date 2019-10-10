@@ -21,6 +21,8 @@
 #include "Mutator/Swap2_E.h"
 
 
+#include <fstream>
+
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC / 1000)
 
 //Template that represents the kind of individual to instantiate
@@ -31,6 +33,8 @@ protected:
 	const size_t mu;
 	const size_t lambda;
 	Mutator* mutator;
+
+	unsigned count_file=0;
 
 private:
 	/// <summary>To generate MU random individuals (to initialize the pool of parents from initial parent)
@@ -127,8 +131,22 @@ public:
 				mutator->mutate(child);
 				//child.swap2_enhanced(blocksig1, blocksig2);
 
-				//Compute edit distance on this child sigma permutation, and update cost value of child
-				const unsigned distanceChild = metric->compute_distance_enhanced(a1, a2, child.getSigma1(), child.getSigma2());
+				unsigned distanceChild = -1;
+                if (this->metric->isDiagonalOptimization())
+                    distanceChild = metric->compute_distance_enhanced_with_diagonal(a1, a2, child.getSigma1(), child.getSigma2(), worstParentCostValue);
+                else
+                    //Compute edit distance on this child sigma permutation, and update cost value of child
+                    distanceChild = metric->compute_distance_enhanced(a1, a2, child.getSigma1(), child.getSigma2());
+
+				// PROVA LUCA
+
+                /*if (distanceChild == 24)
+                    std::cout<<std::endl<<"ottima é : "<<count_file<<std::endl;
+                saveToFile_matrix();
+
+                count_file++;*/
+
+				// END PROVA LUCA
 
 				// TODO inserire la mia con la distanza.
 				/*const int newDistance =
@@ -171,6 +189,31 @@ public:
 		//delete[] blocksig2;
 
 		return bestIndividual.getCostValue();
+	}
+
+	// utility function to save in file
+	void saveToFile_matrix(){
+	    std::fstream outfile;
+        std::string file_name = "export_files_es/example_" + std::to_string(count_file) + ".txt";
+	    outfile.open(file_name, std::ios::out);
+
+	    EditDistance* e_metric = dynamic_cast<EditDistance*>(metric);
+	    for (size_t i = 0; i < e_metric->getN(); i++) {
+            for (size_t j = 0; j < e_metric->getM(); j++) {
+                Matrix<unsigned> *matrix_2 = e_metric->getMatrix();
+                //std::cout << (*matrix_2)(i, j) << std::endl;
+                outfile << (*matrix_2)(i, j) << ",";
+            }
+            outfile << "\n";
+        }
+
+	    // stampare l'ottima
+	    //if (((*(e_metric -> getMatrix()))(e_metric->getN(), e_metric->getM())) == 24)
+	     //   std::cout<< count_file << std::endl;
+
+	    outfile.close();
+
+
 	}
 
 };

@@ -16,6 +16,10 @@ public:
 
     virtual unsigned compute_heuristic(const AbstractSequence&, const AbstractSequence&) { return 0; };
 
+    void setMetric(Metric* m){
+        this->metric = m;
+    }
+
 };
 
 
