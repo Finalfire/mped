@@ -133,7 +133,7 @@ public:
 
 				unsigned distanceChild = -1;
                 if (this->metric->isDiagonalOptimization())
-                    distanceChild = metric->compute_distance_enhanced_with_diagonal(a1, a2, child.getSigma1(), child.getSigma2(), worstParentCostValue);
+                    distanceChild = metric->compute_distance_matrix_enhanced_with_diagonal(a1, a2, child.getSigma1(), child.getSigma2(), worstParentCostValue);
                 else
                     //Compute edit distance on this child sigma permutation, and update cost value of child
                     distanceChild = metric->compute_distance_enhanced(a1, a2, child.getSigma1(), child.getSigma2());
@@ -141,10 +141,10 @@ public:
 				// PROVA LUCA
 
                 /*if (distanceChild == 24)
-                    std::cout<<std::endl<<"ottima é : "<<count_file<<std::endl;
+                    std::cout<<std::endl<<"ottima é : "<<count_file<<std::endl;*/
                 saveToFile_matrix();
 
-                count_file++;*/
+                count_file++;
 
 				// END PROVA LUCA
 

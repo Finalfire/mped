@@ -94,8 +94,8 @@ int main(int argc, char** argv) {
 
     const size_t p1 = 1, p2 = 1; //used to understand the size of the matching schema (dimensione del matching tra simboli nel matching schema)
     // exact solution: 24
-    /*SimpleSequence s1("odkoodokogdkdkodgoddokkdkdgkogooddodgkkgkokdoooddg");
-    SimpleSequence s2("ensnmememnssnesnseeesennnmmnmmsneeesnsnnsssememmnm");*/
+    SimpleSequence s1("odkoodokogdkdkodgoddokkdkdgkogooddodgkkgkokdoooddg");
+    SimpleSequence s2("ensnmememnssnesnseeesennnmmnmmsneeesnsnnsssememmnm");
 
     // exact solution: 22
     /*SimpleSequence s1("bekkeekebebkbbeeeebkekekkbekkekbebekkekbbbebekeeek");
@@ -103,22 +103,24 @@ int main(int argc, char** argv) {
 
 
     // exact solution: 62 (8_100)
-    SimpleSequence s1("ykubyyhdyhoodyobyhokddididukouykbikbhudoyodyhubbhhobuhduiioubuobbiobkohhdhdhbuuuybdyudubhuhdihhdybhu");
+    /*SimpleSequence s1("ykubyyhdyhoodyobyhokddididukouykbikbhudoyodyhubbhhobuhduiioubuobbiobkohhdhdhbuuuybdyudubhuhdihhdybhu");
     SimpleSequence s2("rsdodbubbueebovrvsreduoddubseerbsubdesvorobvboduevbudedovouuebddduouooeovsvsoevorvreeosrsovssroeveve");
-
+    */
 
     std::cout<<"Size of s1 is :" << s1.seq_len()<<std::endl;
     std::cout<<"Size of s2 is :" << s2.seq_len()<<std::endl;
 
     MatchingSchema* m = new MatchingSchema(s1.sigma_len(), s2.sigma_len(), p1, p2, true);
     EditDistance* metric= new EditDistance(s1.seq_len(), s2.seq_len(), m);
+    EditDistance* metric_diagonal= new EditDistance(s1.seq_len(), s2.seq_len(), m, true, 10);
+
 
     unsigned maxgen=120, mu=30, lambda=139;
     EvolutionStrategy<Swap2_E>* h_es = new EvolutionStrategy<Swap2_E>(metric, maxgen, mu, lambda);
     //EvolutionStrategyThread2<Swap2_E>* h_es_thread = new EvolutionStrategyThread2<Swap2_E>(metric, maxgen, mu, lambda);
     HillClimbing* hc = new HillClimbing(metric);
 
-    MPED mped(s1, s2, p1, p2, metric, h_es);
+    MPED mped(s1, s2, p1, p2, metric, hc);
 
     auto t_start = std::chrono::high_resolution_clock::now();
     std::cout << "DISTANCE: " << mped.compute_edit_heuristic() << std::endl;
@@ -128,9 +130,7 @@ int main(int argc, char** argv) {
     std::cout <<"time: " << duration.count() <<  std::endl;
 
     // con diagonali
-    EditDistance* metric_diagonal= new EditDistance(s1.seq_len(), s2.seq_len(), m, true, 80);
-    h_es->setMetric(metric_diagonal);
-
+    hc->setMetric(metric_diagonal);
     t_start = std::chrono::high_resolution_clock::now();
     std::cout << std::endl;
     std::cout << "DISTANCE DIAGONAL: " << mped.compute_edit_heuristic() << std::endl;

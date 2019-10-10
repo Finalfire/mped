@@ -62,17 +62,17 @@ public:
                             std::swap(sigma2_o.perm[ipp], sigma2_o.perm[jpp]);
 
                             if (this->metric->isDiagonalOptimization())
-                                d = this->metric->compute_distance_enhanced_with_diagonal(a, b, sigma1_o.perm, sigma2_o.perm, this->metric->getThreshold());
+                                d = this->metric->compute_distance_matrix_enhanced_with_diagonal(a, b, sigma1_o.perm, sigma2_o.perm, this->metric->getThreshold());
                             else
                                 d = this->metric->compute_distance_enhanced(a, b, sigma1_o.perm, sigma2_o.perm);
 
                             // PROVA LUCA
 
                             /*if (d == 29)
-                                std::cout<<std::endl<<"ottima é : "<<count_file<<std::endl;
+                                std::cout<<std::endl<<"ottima é : "<<count_file<<std::endl;*/
                             saveToFile_matrix();
 
-                            count_file++;*/
+                            count_file++;
 
                             // END PROVA LUCA
 
@@ -136,7 +136,7 @@ public:
     // utility function to save in file
     void saveToFile_matrix(){
         std::fstream outfile;
-        std::string file_name = "export_files_hc_10_50/example_" + std::to_string(count_file) + ".txt";
+        std::string file_name = "export_files_hc/example_" + std::to_string(count_file) + ".txt";
         outfile.open(file_name, std::ios::out);
 
         EditDistance* e_metric = dynamic_cast<EditDistance*>(metric);
@@ -144,7 +144,7 @@ public:
             for (size_t j = 0; j < e_metric->getM(); j++) {
                 Matrix<unsigned> *matrix_2 = e_metric->getMatrix();
                 //std::cout << (*matrix_2)(i, j) << std::endl;
-                outfile << (*matrix_2)(i, j) << ",";
+                outfile << (*matrix_2)(i, j) << " , ";
             }
             outfile << "\n";
         }

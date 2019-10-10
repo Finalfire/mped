@@ -11,23 +11,29 @@ private:
     Matrix<unsigned>* matrix;
 
 
-    void clear() {
+    void setUpMatrix() {
         // setup the matrix here
         for (size_t i = 0; i < n; i++) (*matrix)(i,0) = i;
         for (size_t j = 0; j < m; j++) (*matrix)(0,j) = j;
+    }
+
+    void clearMatrix(){
+        for (size_t i = 1; i < n; i++)
+            for (size_t j = 1; j < m; j++)
+                (*matrix)(i, j) = 0;
     }
 
 public:
 
     EditDistance(unsigned r, unsigned c, MatchingSchema* ms) : Metric(ms), n(r+1), m(c+1) {
         matrix = new Matrix<unsigned>(n, m , 0);
-        clear();
+        setUpMatrix();
     };
 
     // used to diagonal optimization
     EditDistance(unsigned r, unsigned c, MatchingSchema* ms, bool u_d_o, unsigned t) : Metric(ms, u_d_o, t), n(r+1), m(c+1) {
         matrix = new Matrix<unsigned>(n, m , 0);
-        clear();
+        setUpMatrix();
     };
     ~EditDistance(){delete matrix;}
 
@@ -71,6 +77,7 @@ public:
     unsigned compute_distance_enhanced(const AbstractSequence& a, const AbstractSequence& b,
                           const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2) {
 
+        clearMatrix();
         std::vector<unsigned> sig1_index(a.sigma_len());
         for (unsigned i = 0; i < a.sigma_len(); i++)
             sig1_index[sig1[i]] = i;
@@ -105,6 +112,7 @@ public:
     unsigned compute_distance_enhanced_with_diagonal(const AbstractSequence& a, const AbstractSequence& b,
                                 const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2, size_t threshold){
 
+        clearMatrix();
         int MAX = std::numeric_limits<int>::max();
 
         if (std::abs((long)(a.seq_len()-b.seq_len()))>=threshold || threshold<0)
@@ -183,6 +191,81 @@ public:
 
         return -1;
     }
+
+
+    unsigned compute_distance_matrix_enhanced_with_diagonal(const AbstractSequence& a, const AbstractSequence& b,
+                                                     const std::vector<unsigned>& sig1, const std::vector<unsigned>& sig2, size_t threshold){
+        clearMatrix();
+        int MAX = std::numeric_limits<int>::max();
+
+        if (std::abs((long)(a.seq_len()-b.seq_len()))>=threshold || threshold<0)
+            return -1;
+
+        // TODO: this must be fixed
+        // uso la dimensione piu piccola tra le due s1l e s2l (m,n)
+        /*if (s1l>s2l){
+            unsigned *temp=s1;		// temp è un array come s1
+            unsigned templ=s1l;		// lunghezza di s1
+            s1=s2;					// s1 contiene s2 adesso
+            s2=temp;				// s2 contiene s1 adesso
+            s1l=s2l;				// lunghezza di s1 è quella di s2
+            s2l=templ;				// lunghezza di s2 è quella di s1 (temp
+        }*/
+
+        // Permutation index
+        std::vector<unsigned> sig1_index(a.sigma_len());
+        for (unsigned i = 0; i < a.sigma_len(); i++)
+            sig1_index[sig1[i]] = i;
+
+        std::vector<unsigned> sig2_index(b.sigma_len());
+        for (unsigned i = 0; i < b.sigma_len(); i++)
+            sig2_index[sig2[i]] = i;
+
+
+        /*
+        // uso due righe e non la matrice completa
+        unsigned* row=new unsigned[a.seq_len()+1];
+        unsigned* col=new unsigned[a.seq_len()+1];
+
+        int boundary=std::min(a.seq_len(), threshold)+1;
+        for (int i=0; i<boundary; i++)
+            row[i]=i;
+
+        // fill array
+        for (int i=boundary; i<a.seq_len()+1; i++)
+            row[i]=MAX;
+        for (int i=0; i<a.seq_len()+1; i++)
+            col[i]=MAX;
+        */
+
+        // iteration
+        for (size_t i=1; i<=a.seq_len(); i++){
+
+            int min = (i<=threshold) ? 1 : std::max(1, (int)(i-threshold));
+            int max = (i<threshold-1) ? threshold+i : std::min(a.seq_len(), i+threshold);
+
+
+            for (size_t j=min; j<=max; j++){
+                (*matrix)(i, j) = std::min(std::min(
+                        (*matrix)(i - 1, j) + 1, // deletion
+                        (*matrix)(i, j - 1) + 1), // insertion
+                        // if in the matching schema there's a false, they match
+                        (*matrix)(i - 1, j - 1) +
+                        (1 * matchingSchema->ms[sig1_index[a.getSequence_repr()[i-1]]][sig2_index[b.getSequence_repr()[j-1]]])
+                );
+            }
+        }
+
+
+        unsigned valuefinal=(*matrix)(a.seq_len(), b.seq_len());
+
+
+        if (valuefinal<threshold)
+            return valuefinal;
+
+        return -1;
+    }
+
 
     void print_matrix() {
         for (size_t i = 0; i < n; i++) {
